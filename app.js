@@ -448,7 +448,7 @@ function renderLibrary(){
   libraryItems.filter(i=>!q || (i.label+' '+i.category).toLowerCase().includes(q)).forEach(i=>{(groups[i.category] ||= []).push(i);});
   const activeCat=activeTool?.source==='library' ? activeTool.category : null;
   panel.innerHTML=Object.entries(groups).map(([cat,items])=>{
-    const open = q || openLibraryCats.has(cat) || cat===activeCat;
+    const open = q || openLibraryCats.has(cat);
     return `<details class="lib-category" data-cat="${cat}" ${open?'open':''}><summary>${cat}</summary><div class="lib-list">${items.map(i=>`<button class="lib-item ${activeTool?.id===i.id?'active':''}" data-lib="${i.id}"><span class="lib-swatch" style="--swatch:${i.color};--texture:${textureCss(i.texture)}"></span><span><span class="lib-name">${i.label}</span><span class="lib-meta">${(i.shapes||[]).map(v=>shapeLabels[v]||v).join(' · ')}</span></span></button>`).join('')}</div></details>`;
   }).join('') || '<p class="small">Aucun objet trouvé.</p>';
   panel.querySelectorAll('[data-lib]').forEach(b=>b.onclick=()=>setActiveTool(b.dataset.lib));
@@ -586,11 +586,9 @@ function addObject(data){
   pushHistory();
   const t=getTool(data.type);
 
-  // Correction v26 :
-  // Avant, tous les nouveaux objets étaient créés avec texture:''.
-  // Donc une pelouse, un gravier ou un massif dessiné en "courbe"
-  // perdait sa texture d'origine dès sa création.
-  const defaultTexture = (data.texture !== undefined) ? data.texture : (t.texture || '');
+  // Par défaut, un nouvel objet est créé sans texture.
+  // La texture reste disponible dans le panneau Propriétés, mais elle n'est plus appliquée automatiquement.
+  const defaultTexture = (data.texture !== undefined) ? data.texture : '';
 
   const obj={id:uid(), name:t.label, height:t.h, price:0, rot:0, color:t.color, locked:false, texture:defaultTexture, shape:t.shape||data.shape||'', libraryId:t.source==='library'?t.id:'', ...data, texture:defaultTexture};
   objects.push(obj);
