@@ -1,3 +1,4 @@
+const RED_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='2' x2='16' y2='30' stroke='red' stroke-width='2'/%3E%3Cline x1='2' y1='16' x2='30' y2='16' stroke='red' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='none' stroke='red' stroke-width='2'/%3E%3C/svg%3E") 16 16, crosshair`;
 const canvas = document.getElementById('plan');
 const ctx = canvas.getContext('2d');
 const summaryEl = document.getElementById('summary');
@@ -422,7 +423,7 @@ canvas.addEventListener('mousedown', e=>{
     if(clickedId){
       if(!isSelected(clickedId) && !e.ctrlKey) setSelection(clickedId);
       const mo=objects.find(o=>o.id===clickedId);
-      if(!mo?.locked){ dragging={ids:[...selectedIds], start:p, originals:selectedObjects().map(clone)}; pushHistory(); canvas.style.cursor='crosshair'; }
+      if(!mo?.locked){ dragging={ids:[...selectedIds], start:p, originals:selectedObjects().map(clone)}; pushHistory(); canvas.style.cursor = RED_CURSOR; }
       updateProps(); draw(); return;
     }
     selectingRect={start:p, end:p, add:e.ctrlKey, remove:e.altKey};
@@ -441,15 +442,15 @@ canvas.addEventListener('mousemove', e=>{
   if(activeTool.mode==='select' && selectingRect){ selectingRect.end=p; draw(); drawSelectionRect(); return; }
   if(activeTool.mode==='select'){
     const h = selectedId ? handleHit(p.x,p.y, primarySelected()) : null;
-    canvas.style.cursor = h ? 'nwse-resize' : 'crosshair';
+    canvas.style.cursor = h ? 'nwse-resize' : RED_CURSOR;
     return;
   }
   if(drawing){ drawing.end=p; draw(); drawPreview(); }
 });
 canvas.addEventListener('mouseup', e=>{
   if(resizing){ resizing=null; saveLocal(); return; }
-  if(dragging){ dragging=null; canvas.style.cursor='default'; saveLocal(); return; }
-  if(selectingRect){ finishSelectionRect(); selectingRect=null; canvas.style.cursor='crosshair'; updateProps(); draw(); return; }
+  if(dragging){ dragging=null; canvas.style.cursor = RED_CURSOR; saveLocal(); return; }
+  if(selectingRect){ finishSelectionRect(); selectingRect=null; canvas.style.cursor = RED_CURSOR; updateProps(); draw(); return; }
   if(!drawing) return;
   drawing.end=pos(e);
   const s=drawing.start, en=drawing.end;
