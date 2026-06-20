@@ -1,4 +1,4 @@
-const RED_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='2' x2='16' y2='30' stroke='red' stroke-width='2'/%3E%3Cline x1='2' y1='16' x2='30' y2='16' stroke='red' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='none' stroke='red' stroke-width='2'/%3E%3C/svg%3E") 16 16, crosshair`;
+const RED_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='0' x2='16' y2='13' stroke='red' stroke-width='0.8'/%3E%3Cline x1='16' y1='19' x2='16' y2='32' stroke='red' stroke-width='0.8'/%3E%3Cline x1='0' y1='16' x2='13' y2='16' stroke='red' stroke-width='0.8'/%3E%3Cline x1='19' y1='16' x2='32' y2='16' stroke='red' stroke-width='0.8'/%3E%3C/svg%3E") 16 16, crosshair`;
 const canvas = document.getElementById('plan');
 const ctx = canvas.getContext('2d');
 const summaryEl = document.getElementById('summary');
@@ -272,8 +272,8 @@ const textureFamilies = {
 };
 function defaultTextureOf(o,t){ return (t && t.texture) || ''; }
 function effectiveTextureName(o,t){
-  if(o && o.texture === NO_TEXTURE) return '';
-  return (o && o.texture) || defaultTextureOf(o,t) || '';
+  if(!o || !o.texture || o.texture === NO_TEXTURE) return '';
+  return o.texture;
 }
 function compatibleTextureKeys(o,t){
   const base = defaultTextureOf(o,t);
@@ -289,7 +289,7 @@ function populateTextureSelectForSelection(){
   const texEl=document.getElementById('propTexture');
   if(!texEl) return;
   const arr=selectedObjects();
-  if(!arr.length){ texEl.innerHTML='<option value="">Automatique selon l’objet</option><option value="__none">Pas de texture</option>'; texEl.disabled=true; return; }
+  if(!arr.length){ texEl.innerHTML='<option value="">Pas de texture</option>'; texEl.disabled=true; return; }
   texEl.disabled=false;
   const first=arr[0], t=getTool(first.type);
   let keys=compatibleTextureKeys(first,t);
@@ -297,10 +297,9 @@ function populateTextureSelectForSelection(){
     const common = keys.filter(k => arr.every(o => compatibleTextureKeys(o,getTool(o.type)).includes(k)));
     keys = common.length ? common : [];
   }
-  const current=arr.length===1 ? (first.texture || '') : (arr.every(o=>(o.texture||'')===(first.texture||'')) ? (first.texture||'') : '');
+  const current=arr.length===1 ? ((first.texture && first.texture !== NO_TEXTURE) ? first.texture : '') : (arr.every(o=>((o.texture && o.texture !== NO_TEXTURE) ? o.texture : '')===((first.texture && first.texture !== NO_TEXTURE) ? first.texture : '')) ? ((first.texture && first.texture !== NO_TEXTURE) ? first.texture : '') : '');
   texEl.innerHTML = [
-    '<option value="">Automatique selon l’objet</option>',
-    '<option value="__none">Pas de texture</option>',
+    '<option value="">Pas de texture</option>',
     ...keys.map(k=>`<option value="${k}">${textureLabels[k]||k}</option>`)
   ].join('');
   texEl.value = current;
@@ -526,7 +525,7 @@ function duplicateSelection(){ copySelection(); pasteSelection(); }
 function addObject(data){
   pushHistory();
   const t=getTool(data.type);
-  const obj={id:uid(), name:t.label, height:t.h, price:0, rot:0, color:t.color, locked:false, texture:t.texture||'', shape:t.shape||data.shape||'', libraryId:t.source==='library'?t.id:'', ...data};
+  const obj={id:uid(), name:t.label, height:t.h, price:0, rot:0, color:t.color, locked:false, texture:'', shape:t.shape||data.shape||'', libraryId:t.source==='library'?t.id:'', ...data};
   objects.push(obj);
   setSelection(obj.id);
   // On garde volontairement l'outil actif après création :
@@ -692,7 +691,7 @@ function drawObj(o){
   if(o.shape==='rounded'){ drawRoundRect(o.x,o.y,o.w,o.h,Math.min(o.w,o.h)*.15); ctx.fill(); ctx.stroke(); label(o,o.x+o.w/2,o.y+o.h/2); if(showDims) drawRectDims(o); return; }
   ctx.fillRect(o.x,o.y,o.w,o.h);ctx.strokeRect(o.x,o.y,o.w,o.h);label(o,o.x+o.w/2,o.y+o.h/2); if(showDims) drawRectDims(o);
 }
-function drawPreview(){ let x=Math.min(drawing.start.x,drawing.end.x), y=Math.min(drawing.start.y,drawing.end.y), w=Math.abs(drawing.end.x-drawing.start.x), h=Math.abs(drawing.end.y-drawing.start.y); if(activeTool.shape==='square'||activeTool.shape==='circle'){ const m=Math.max(w,h); w=h=m; } const o={id:'preview',type:activeTool.id,libraryId:activeTool.source==='library'?activeTool.id:'',shape:activeTool.shape||'',texture:activeTool.texture||'',color:activeTool.color,...(activeTool.mode==='line'?{x1:drawing.start.x,y1:drawing.start.y,x2:drawing.end.x,y2:drawing.end.y}:{x,y,w,h})}; ctx.globalAlpha=.45;drawObj(o);ctx.globalAlpha=1; }
+function drawPreview(){ let x=Math.min(drawing.start.x,drawing.end.x), y=Math.min(drawing.start.y,drawing.end.y), w=Math.abs(drawing.end.x-drawing.start.x), h=Math.abs(drawing.end.y-drawing.start.y); if(activeTool.shape==='square'||activeTool.shape==='circle'){ const m=Math.max(w,h); w=h=m; } const o={id:'preview',type:activeTool.id,libraryId:activeTool.source==='library'?activeTool.id:'',shape:activeTool.shape||'',texture:'',color:activeTool.color,...(activeTool.mode==='line'?{x1:drawing.start.x,y1:drawing.start.y,x2:drawing.end.x,y2:drawing.end.y}:{x,y,w,h})}; ctx.globalAlpha=.45;drawObj(o);ctx.globalAlpha=1; }
 function label(o,x,y){ctx.fillStyle='#172017';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillText(o.name||getTool(o.type).label,x,y);}
 function dot(x,y){ctx.fillStyle='#111';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();}
 function centroid(pts){return pts.reduce((a,p)=>({x:a.x+p.x/pts.length,y:a.y+p.y/pts.length}),{x:0,y:0});}
