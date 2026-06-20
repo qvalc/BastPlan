@@ -112,7 +112,9 @@ const libraryItems = [
 ];
 
 const shapeLabels={auto:'Automatique', line:'Ligne', curve:'Courbe', rectangle:'Rectangle', square:'Carré', ellipse:'Ovale', circle:'Rond', free:'Forme libre', point:'Point / symbole'};
-let preferredShape='auto';
+const allShapeValues=['auto','line','curve','rectangle','square','ellipse','circle','free','point'];
+let preferredBaseShape='auto';
+let preferredLibraryShape='auto';
 let openLibraryCats=new Set();
 function modeForShape(item, shape){
   if(!shape || shape==='auto') return item.mode;
@@ -129,21 +131,30 @@ function allowedShape(item, requested){
   if(requested==='auto') return true;
   return shapes.includes(requested) || (requested==='square' && shapes.includes('rectangle')) || (requested==='circle' && shapes.includes('ellipse'));
 }
-function libraryShapeFor(item){
-  const sel=document.getElementById('shapeSelect');
-  const requested=sel ? sel.value : preferredShape || 'auto';
-  if(requested==='auto') return (item.shapes && item.shapes[0]) || 'rectangle';
+function shapeForItem(item, requested){
+  if(requested==='auto') return (item.shapes && item.shapes[0]) || item.mode || 'rectangle';
   if(allowedShape(item, requested)) return requested;
   return (item.shapes && item.shapes[0]) || requested;
 }
-function updateShapeSelect(){
+function baseShapeFor(item){
+  const sel=document.getElementById('baseShapeSelect');
+  const requested=sel ? sel.value : preferredBaseShape || 'auto';
+  if(requested==='auto') return item.mode || 'rectangle';
+  return requested;
+}
+function libraryShapeFor(item){
   const sel=document.getElementById('shapeSelect');
+  const requested=sel ? sel.value : preferredLibraryShape || 'auto';
+  return shapeForItem(item, requested);
+}
+function fillShapeSelect(sel, current, item=null){
   if(!sel) return;
-  const all=['auto','line','curve','rectangle','square','ellipse','circle','free','point'];
-  const current=preferredShape || sel.value || 'auto';
-  const shapes=activeTool?.source==='library' ? (activeTool.shapes || []) : all.filter(x=>x!=='auto');
-  sel.innerHTML=all.map(v=>`<option value="${v}" ${v!=='auto' && activeTool?.source==='library' && !allowedShape(activeTool,v)?'disabled':''}>${shapeLabels[v]||v}</option>`).join('');
-  sel.value = (current==='auto' || !activeTool?.source || allowedShape(activeTool,current)) ? current : 'auto';
+  sel.innerHTML=allShapeValues.map(v=>`<option value="${v}" ${v!=='auto' && item && !allowedShape(item,v)?'disabled':''}>${shapeLabels[v]||v}</option>`).join('');
+  sel.value=(current==='auto' || !item || allowedShape(item,current)) ? current : 'auto';
+}
+function updateShapeSelect(){
+  fillShapeSelect(document.getElementById('baseShapeSelect'), preferredBaseShape || 'auto');
+  fillShapeSelect(document.getElementById('shapeSelect'), preferredLibraryShape || 'auto', activeTool?.source==='library' ? activeTool : null);
 }
 libraryItems.forEach(item=>toolDefs.push({...item, mode:item.mode, source:'library'}));
 const texturePatterns={
@@ -382,7 +393,12 @@ function initTools(){
 function setActiveTool(id){
   activeTool={...getTool(id)};
   updateShapeSelect();
-  if(activeTool.source==='library'){ activeTool.shape=libraryShapeFor(activeTool); activeTool.mode=modeForShape(activeTool, activeTool.shape); updateShapeSelect(); }
+  if(activeTool.id!=='select'){
+    if(activeTool.source==='library') activeTool.shape=libraryShapeFor(activeTool);
+    else activeTool.shape=baseShapeFor(activeTool);
+    activeTool.mode=modeForShape(activeTool, activeTool.shape);
+    updateShapeSelect();
+  }
   polyDraft=[]; drawing=null; dragging=null; resizing=null;
   hideContextMenu(); initTools(); draw();
 }
@@ -399,13 +415,16 @@ function renderLibrary(){
   const activeCat=activeTool?.source==='library' ? activeTool.category : null;
   panel.innerHTML=Object.entries(groups).map(([cat,items])=>{
     const open = q || openLibraryCats.has(cat) || cat===activeCat;
-    return `<details class="lib-category" data-cat="${cat}" ${open?'open':''}><summary>${cat}</summary><div class="lib-list">${items.map(i=>`<button class="lib-item ${activeTool.id===i.id?'active':''}" data-lib="${i.id}"><span class="lib-swatch" style="--swatch:${i.color};--texture:${textureCss(i.texture)}"></span><span><span class="lib-name">${i.label}</span><span class="lib-meta">${(i.shapes||[]).map(v=>shapeLabels[v]||v).join(' · ')}</span></span></button>`).join('')}</div></details>`;
+    return `<details class="lib-category" data-cat="${cat}" ${open?'open':''}><summary>${cat}</summary><div class="lib-list">${items.map(i=>`<button class="lib-item ${activeTool?.id===i.id?'active':''}" data-lib="${i.id}"><span class="lib-swatch" style="--swatch:${i.color};--texture:${textureCss(i.texture)}"></span><span><span class="lib-name">${i.label}</span><span class="lib-meta">${(i.shapes||[]).map(v=>shapeLabels[v]||v).join(' · ')}</span></span></button>`).join('')}</div></details>`;
   }).join('') || '<p class="small">Aucun objet trouvé.</p>';
   panel.querySelectorAll('[data-lib]').forEach(b=>b.onclick=()=>setActiveTool(b.dataset.lib));
   panel.querySelectorAll('.lib-category').forEach(d=>d.addEventListener('toggle',()=>{ const cat=d.dataset.cat; if(d.open) openLibraryCats.add(cat); else openLibraryCats.delete(cat); }));
 }
 document.addEventListener('input', e=>{ if(e.target?.id==='librarySearch') renderLibrary(); });
-document.addEventListener('change', e=>{ if(e.target?.id==='shapeSelect'){ preferredShape=e.target.value; if(activeTool?.source==='library') setActiveTool(activeTool.id); } });
+document.addEventListener('change', e=>{
+  if(e.target?.id==='baseShapeSelect'){ preferredBaseShape=e.target.value; if(activeTool && activeTool.id!=='select' && !activeTool.source) setActiveTool(activeTool.id); }
+  if(e.target?.id==='shapeSelect'){ preferredLibraryShape=e.target.value; if(activeTool?.source==='library') setActiveTool(activeTool.id); }
+});
 
 
 canvas.addEventListener('mousedown', e=>{

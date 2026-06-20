@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BastPlan Paysage - Prototype avancé v22 courbes et couleurs</title>
+  <title>BastPlan Paysage - Prototype avancé v23 bibliothèques et formes</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><strong>BastPlan Paysage</strong><span>v22-courbes-couleurs</span></div>
+    <div class="brand"><strong>BastPlan Paysage</strong><span>v23-bibliotheques-formes</span></div>
     <div class="top-actions">
       <button id="btnClear">Nouveau</button>
       <label class="file-btn">Ouvrir<input type="file" id="fileLoad" accept="application/json" /></label>
@@ -30,7 +30,20 @@
       <h2>Outils</h2>
       <button id="selectToolBtn" class="tool main-select">Sélection / déplacement</button>
       <details id="objectDrawer" class="object-drawer" open>
-        <summary>Objets du plan</summary>
+        <summary>Bibliothèque de base</summary>
+        <label>Forme de l’objet
+          <select id="baseShapeSelect">
+            <option value="auto">Automatique</option>
+            <option value="line">Ligne</option>
+            <option value="curve">Courbe</option>
+            <option value="rectangle">Rectangle</option>
+            <option value="square">Carré</option>
+            <option value="ellipse">Ovale</option>
+            <option value="circle">Rond</option>
+            <option value="free">Forme libre</option>
+            <option value="point">Point / symbole</option>
+          </select>
+        </label>
         <div class="tool-grid" id="tools"></div>
       </details>
       <details id="libraryDrawer" class="object-drawer library-drawer">
