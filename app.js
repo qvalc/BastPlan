@@ -722,6 +722,20 @@ function drawSmoothOpenPath(pts, doStroke=true){
   }
   if(doStroke) ctx.stroke(); else ctx.stroke();
 }
+function drawSmoothClosedPath(pts){
+  if(!pts || pts.length<3) return;
+  const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+  const n=pts.length;
+  const start=mid(pts[n-1], pts[0]);
+  ctx.beginPath();
+  ctx.moveTo(start.x,start.y);
+  for(let i=0;i<n;i++){
+    const next=pts[(i+1)%n];
+    const end=mid(pts[i], next);
+    ctx.quadraticCurveTo(pts[i].x, pts[i].y, end.x, end.y);
+  }
+  ctx.closePath();
+}
 function curveLengthPx(pts){
   if(!pts || pts.length<2) return 0;
   let len=0;
@@ -740,7 +754,25 @@ function drawCurveDims(pts){
 }
 function drawObj(o){
   const t=getTool(o.type); const fill=o.color||t.color; ctx.lineWidth=isSelected(o.id)?1.0:0.35; ctx.strokeStyle=isSelected(o.id)?'#ff7b00':'#263328'; ctx.fillStyle=patternFill(o, fill);
-  if(o.points){ if(o.shape==='curve' || o.open){ ctx.strokeStyle=isSelected(o.id)?'#ff7b00':fill; ctx.lineWidth=(Number(o.widthM||t.widthM||0.25)*majorGrid)||2; ctx.lineCap='round'; ctx.lineJoin='round'; drawSmoothOpenPath(o.points); ctx.lineWidth=0.35; label(o, centroid(o.points).x, centroid(o.points).y-8); if(showDims) drawCurveDims(o.points); return; } ctx.beginPath();o.points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fill();ctx.stroke();label(o, centroid(o.points).x, centroid(o.points).y); if(showDims) drawPolyDims(o.points); return;}
+  if(o.points){
+    if(o.shape==='curve' || o.open){
+      ctx.strokeStyle=isSelected(o.id)?'#ff7b00':patternFill(o, fill);
+      ctx.lineWidth=(Number(o.widthM||t.widthM||0.25)*majorGrid)||2;
+      ctx.lineCap='round';
+      ctx.lineJoin='round';
+      drawSmoothOpenPath(o.points);
+      ctx.lineWidth=0.35;
+      label(o, centroid(o.points).x, centroid(o.points).y-8);
+      if(showDims) drawCurveDims(o.points);
+      return;
+    }
+    drawSmoothClosedPath(o.points);
+    ctx.fill();
+    ctx.stroke();
+    label(o, centroid(o.points).x, centroid(o.points).y);
+    if(showDims) drawPolyDims(o.points);
+    return;
+  }
   if(o.x1!==undefined){ctx.strokeStyle=isSelected(o.id)?'#ff7b00':fill;ctx.lineWidth=(String(o.type).includes('haie')||String(o.libraryId).includes('haie'))?1.2:(o.type==='cote'?0.75:0.85);ctx.beginPath();ctx.moveTo(o.x1,o.y1);ctx.lineTo(o.x2,o.y2);ctx.stroke();if(o.type==='cote'){ drawLineDim({x:o.x1,y:o.y1},{x:o.x2,y:o.y2}); return; } label(o,(o.x1+o.x2)/2,(o.y1+o.y2)/2-8); if(showDims) drawLineDim({x:o.x1,y:o.y1},{x:o.x2,y:o.y2}); return;}
   if(o.r){ if(o.type==='texte'){ctx.fillStyle=fill;ctx.font='bold 18px Arial';ctx.textAlign='center';ctx.fillText(o.name||'Texte',o.x,o.y); return;} ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.fill();ctx.stroke();label(o,o.x,o.y-o.r-8); if(showDims) drawCircleDim(o); return;}
   if(o.shape==='ellipse'||o.shape==='circle'||(!o.shape && (o.type==='eau'||o.type==='piscine'))){ctx.beginPath();ctx.ellipse(o.x+o.w/2,o.y+o.h/2,o.w/2,o.h/2,0,0,Math.PI*2);ctx.fill();ctx.stroke();label(o,o.x+o.w/2,o.y+o.h/2); if(showDims) drawEllipseDims(o); return;}
@@ -1113,32 +1145,100 @@ function isWaterLike(o){
   const id=String(o.libraryId||'').toLowerCase(), type=String(o.type||'').toLowerCase(), name=String(o.name||'').toLowerCase();
   return type==='eau'||type==='piscine'||id.includes('piscine')||id.includes('plan_eau')||id.includes('bassin')||id.includes('jacuzzi')||name.includes('piscine')||name.includes('eau')||name.includes('bassin')||name.includes('jacuzzi');
 }
-function makeFlatShapeGeometryFromPoints(points,b){
+function sampleOpenSmoothPoints(points, samplesPerSegment=8){
   const pts=(points||[]).filter(Boolean);
+  if(pts.length<2) return pts;
+  if(pts.length===2) return pts.map(p=>({x:p.x,y:p.y}));
+  const out=[{x:pts[0].x,y:pts[0].y}];
+  for(let i=1;i<pts.length-1;i++){
+    const p0=out[out.length-1];
+    const cp=pts[i];
+    const next=pts[i+1];
+    const end={x:(cp.x+next.x)/2,y:(cp.y+next.y)/2};
+    for(let s=1;s<=samplesPerSegment;s++){
+      const t=s/samplesPerSegment, mt=1-t;
+      out.push({x:mt*mt*p0.x+2*mt*t*cp.x+t*t*end.x, y:mt*mt*p0.y+2*mt*t*cp.y+t*t*end.y});
+    }
+  }
+  const prev=pts[pts.length-2], last=pts[pts.length-1], p0=out[out.length-1];
+  for(let s=1;s<=samplesPerSegment;s++){
+    const t=s/samplesPerSegment, mt=1-t;
+    out.push({x:mt*mt*p0.x+2*mt*t*prev.x+t*t*last.x, y:mt*mt*p0.y+2*mt*t*prev.y+t*t*last.y});
+  }
+  return out;
+}
+function sampleClosedSmoothPoints(points, samplesPerCorner=8){
+  const pts=(points||[]).filter(Boolean);
+  if(pts.length<3) return pts;
+  const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+  const out=[];
+  const n=pts.length;
+  let start=mid(pts[n-1], pts[0]);
+  for(let i=0;i<n;i++){
+    const cp=pts[i];
+    const end=mid(pts[i], pts[(i+1)%n]);
+    for(let s=0;s<samplesPerCorner;s++){
+      const t=s/samplesPerCorner, mt=1-t;
+      out.push({x:mt*mt*start.x+2*mt*t*cp.x+t*t*end.x, y:mt*mt*start.y+2*mt*t*cp.y+t*t*end.y});
+    }
+    start=end;
+  }
+  return out;
+}
+function cleanPolyPoints(points){
+  const pts=(points||[]).filter(Boolean);
+  const out=[];
+  for(const p of pts){
+    const last=out[out.length-1];
+    if(!last || Math.hypot(p.x-last.x,p.y-last.y)>0.01) out.push({x:p.x,y:p.y});
+  }
+  if(out.length>2 && Math.hypot(out[0].x-out[out.length-1].x,out[0].y-out[out.length-1].y)<0.01) out.pop();
+  return out;
+}
+function makeFlatShapeGeometryFromPoints(points,b){
+  const pts=cleanPolyPoints(sampleClosedSmoothPoints(points, 6));
   if(!window.THREE || pts.length<3) return null;
   const shape=new THREE.Shape();
   shape.moveTo(worldX(pts[0].x,b), worldZ(pts[0].y,b));
-  for(let i=1;i<pts.length;i++){
-    shape.lineTo(worldX(pts[i].x,b), worldZ(pts[i].y,b));
-  }
+  for(let i=1;i<pts.length;i++) shape.lineTo(worldX(pts[i].x,b), worldZ(pts[i].y,b));
   shape.closePath();
   const geo=new THREE.ShapeGeometry(shape);
   geo.rotateX(-Math.PI/2);
+  geo.computeVertexNormals();
   return geo;
 }
 
-function makeCurve3D(points,b,y,thickness){
-  const pts=(points||[]).filter(Boolean);
+function makeCurveRibbon3D(points,b,y,width){
+  const pts=sampleOpenSmoothPoints(points, 7);
   if(!window.THREE || pts.length<2) return null;
-  const v=pts.map(p=>new THREE.Vector3(worldX(p.x,b), y, worldZ(p.y,b)));
-  if(v.length===2){
-    const a=pts[0], cpt=pts[1];
-    const len=Math.max(.05, Math.hypot(cpt.x-a.x,cpt.y-a.y)/majorGrid);
-    const geo=new THREE.BoxGeometry(len, Math.max(0.035, thickness*.28), thickness);
-    return {geometry:geo, position:new THREE.Vector3((worldX(a.x,b)+worldX(cpt.x,b))/2,y,(worldZ(a.y,b)+worldZ(cpt.y,b))/2), rotationY:-Math.atan2(cpt.y-a.y,cpt.x-a.x)};
+  const half=Math.max(0.03, width/2);
+  const positions=[], uvs=[], indices=[];
+  let distance=0;
+  for(let i=0;i<pts.length;i++){
+    const p=pts[i];
+    const prev=pts[Math.max(0,i-1)], next=pts[Math.min(pts.length-1,i+1)];
+    const dx=next.x-prev.x, dy=next.y-prev.y;
+    const l=Math.hypot(dx,dy)||1;
+    const nx=-dy/l, ny=dx/l;
+    if(i>0) distance += Math.hypot(pts[i].x-pts[i-1].x, pts[i].y-pts[i-1].y)/majorGrid;
+    positions.push(worldX(p.x+nx*half*majorGrid,b), y, worldZ(p.y+ny*half*majorGrid,b));
+    positions.push(worldX(p.x-nx*half*majorGrid,b), y, worldZ(p.y-ny*half*majorGrid,b));
+    uvs.push(distance, 1, distance, 0);
+    if(i<pts.length-1){
+      const a=i*2, c=a+2;
+      indices.push(a,a+1,c, a+1,c+1,c);
+    }
   }
-  const curve=new THREE.CatmullRomCurve3(v, false, 'catmullrom', 0.35);
-  return {geometry:new THREE.TubeGeometry(curve, Math.max(16, v.length*10), Math.max(0.025, thickness/2), 8, false)};
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs,2));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+  return {geometry:geo};
+}
+
+function makeCurve3D(points,b,y,thickness){
+  return makeCurveRibbon3D(points,b,Math.max(0.035,y),Math.max(0.06, thickness));
 }
 
 function add3D(scene,o,b){
