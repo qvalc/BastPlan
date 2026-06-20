@@ -28,6 +28,14 @@ let redoStack = [];
 let currentView = '2d';
 let planZoom = 1; // zoom visuel interne du canvas : 1 = 100 %
 
+// Détail / taille visuelle de la texture.
+// 1x = taille de base, 50x = texture beaucoup plus grande et donc détails plus visibles.
+// Les anciennes valeurs en % (100 à 500) sont converties automatiquement en 1x à 5x.
+const TEXTURE_DETAIL_OPTIONS = [1, 2, 5, 10, 20, 50];
+const TEXTURE_SCALE_MIN = 1;
+const TEXTURE_SCALE_MAX = 50;
+const TEXTURE_SCALE_DEFAULT = 1;
+
 const toolDefs = [
   {id:'select', label:'Sélection / déplacement', mode:'select'},
   {id:'terrain', label:'Terrain', mode:'rect', color:'#cbe8a7', unit:'m²', h:0.05, texture:'pelouse'},
@@ -277,6 +285,106 @@ const texturePBRPaths={
 };
 
 
+// Taille réelle approximative d'une tuile de texture.
+// Objectif : éviter qu'une seule grande image soit étirée sur toute une pelouse/allée.
+// 1 = taille de base de la tuile avant le réglage « Détail texture ».
+const textureTileMeters={
+  pelouse:1,
+  prairie:1,
+  gravier:0.75,
+  dolomie:0.75,
+  ecorce:0.75,
+  massif:0.75,
+  terre:0.75,
+  paves:1,
+  dalles:1,
+  bois:1.5,
+  pierre:1,
+  eau:2,
+  eau_naturelle:2,
+  haie_dense:1,
+  haie_fine:1,
+  haie_feuillu:1,
+  haie_rouge:1,
+  haie_sombre:1,
+  conifere:1,
+  arbre:1,
+  arbre_feuillu:1,
+  arbre_fleuri:1,
+  arbuste:1,
+  fleurs:0.75,
+  maison:2,
+  verre:2,
+  metal:1,
+  cloture:1,
+  copeaux:0.75
+};
+function textureTileMeter(tex){
+  return Math.max(0.1, Number(textureTileMeters[tex]) || 1);
+}
+function objectTextureSizeMeters(o,t){
+  if(!o) return {width:1, depth:1};
+  if(o.points && o.points.length){
+    const b=polyBounds(o.points);
+    return {
+      width:Math.max(0.1, (b.maxX-b.minX)/majorGrid),
+      depth:Math.max(0.1, (b.maxY-b.minY)/majorGrid)
+    };
+  }
+  if(o.x1!==undefined){
+    return {
+      width:Math.max(0.1, Math.hypot(o.x2-o.x1,o.y2-o.y1)/majorGrid),
+      depth:Math.max(0.1, Number(o.widthM||t?.widthM||0.25))
+    };
+  }
+  if(o.r){
+    return {width:Math.max(0.1, (o.r*2)/majorGrid), depth:Math.max(0.1, (o.r*2)/majorGrid)};
+  }
+  return {
+    width:Math.max(0.1, Math.abs(Number(o.w)||majorGrid)/majorGrid),
+    depth:Math.max(0.1, Math.abs(Number(o.h)||majorGrid)/majorGrid)
+  };
+}
+function normalizeTextureScale(value){
+  let raw = Number(value);
+  if(!Number.isFinite(raw)) return TEXTURE_SCALE_DEFAULT;
+
+  // Compatibilité avec l'ancienne version :
+  // 100 % -> 1x, 200 % -> 2x, 500 % -> 5x.
+  if(raw >= 100) raw = raw / 100;
+
+  const clamped = Math.min(TEXTURE_SCALE_MAX, Math.max(TEXTURE_SCALE_MIN, raw));
+
+  // On force la valeur sur les choix disponibles : 1x, 2x, 5x, 10x, 20x, 50x.
+  return TEXTURE_DETAIL_OPTIONS.reduce((best, current) => {
+    return Math.abs(current - clamped) < Math.abs(best - clamped) ? current : best;
+  }, TEXTURE_DETAIL_OPTIONS[0]);
+}
+function textureScalePercent(o){
+  return normalizeTextureScale(o && o.textureScale !== undefined ? o.textureScale : TEXTURE_SCALE_DEFAULT);
+}
+function textureScaleFactor(o){
+  return textureScalePercent(o);
+}
+function normalizeObjectTextureScales(){
+  objects.forEach(o=>{
+    if(!o) return;
+    o.textureScale = normalizeTextureScale(o.textureScale !== undefined ? o.textureScale : TEXTURE_SCALE_DEFAULT);
+  });
+}
+function textureRepeatForObject(o,t,tex){
+  const tile=textureTileMeter(tex);
+  const s=objectTextureSizeMeters(o,t);
+  const scale=textureScaleFactor(o);
+
+  // Plus le détail est élevé, plus la même image est dessinée grande.
+  // Donc elle se répète moins souvent, ce qui rend ses détails réellement visibles.
+  return {
+    x:Math.max(0.02, (s.width/tile) / scale),
+    y:Math.max(0.02, (s.depth/tile) / scale)
+  };
+}
+
 const NO_TEXTURE = '__none';
 const textureLabels = {
   pelouse:'Pelouse réaliste', prairie:'Prairie', gravier:'Gravier', dolomie:'Dolomie', ecorce:'Écorces',
@@ -343,6 +451,47 @@ function populateTextureSelectForSelection(){
   texEl.value = current;
 }
 
+function ensureTextureScaleControl(){
+  if(document.getElementById('propTextureScale')) return;
+  const texEl=document.getElementById('propTexture');
+  if(!texEl) return;
+  const texLabel=texEl.closest('label') || texEl.parentElement;
+  const label=document.createElement('label');
+  label.id='textureScaleLabel';
+  label.textContent='Détail texture';
+  label.style.marginTop='10px';
+  const select=document.createElement('select');
+  select.id='propTextureScale';
+  TEXTURE_DETAIL_OPTIONS.forEach(v=>{
+    const opt=document.createElement('option');
+    opt.value=String(v);
+    opt.textContent=String(v)+'x';
+    select.appendChild(opt);
+  });
+  label.appendChild(select);
+  texLabel.insertAdjacentElement('afterend', label);
+}
+function updateTextureScaleControl(){
+  ensureTextureScaleControl();
+  const scaleEl=document.getElementById('propTextureScale');
+  const scaleLabel=document.getElementById('textureScaleLabel');
+  const texEl=document.getElementById('propTexture');
+  const arr=selectedObjects();
+  if(!scaleEl) return;
+  if(!arr.length){
+    scaleEl.disabled=true;
+    scaleEl.value=String(TEXTURE_SCALE_DEFAULT);
+    if(scaleLabel) scaleLabel.style.opacity='.55';
+    return;
+  }
+  const first=textureScalePercent(arr[0]);
+  const same=arr.every(o=>textureScalePercent(o)===first);
+  const hasTexture = texEl ? !!texEl.value : arr.some(o=>!!effectiveTextureName(o,getTool(o.type)));
+  scaleEl.disabled=!hasTexture;
+  scaleEl.value=String(same ? first : TEXTURE_SCALE_DEFAULT);
+  if(scaleLabel) scaleLabel.style.opacity=hasTexture ? '1' : '.55';
+}
+
 const textureImages={};
 function loadTextureAssets(){
   Object.entries(textureAssetPaths).forEach(([name,path])=>{
@@ -400,7 +549,7 @@ function lineSnapPoint(p, type){
 function clone(o){return JSON.parse(JSON.stringify(o))}
 function stateSnapshot(){ return JSON.stringify({majorGrid,snapGrid,objects,planZoom}); }
 function pushHistory(){ historyStack.push(stateSnapshot()); if(historyStack.length>80) historyStack.shift(); redoStack=[]; }
-function restoreSnapshot(str){ try{ const d=JSON.parse(str); majorGrid=d.majorGrid||25; snapGrid=d.snapGrid||25; planZoom=clampZoom(Number(d.planZoom)||planZoom||1); objects=d.objects||[]; clearSelection(); setScaleSelect(); updateZoomControls(); applyPlanZoom(); updateProps(); draw(); saveLocal(); }catch(e){console.warn(e)} }
+function restoreSnapshot(str){ try{ const d=JSON.parse(str); majorGrid=d.majorGrid||25; snapGrid=d.snapGrid||25; planZoom=clampZoom(Number(d.planZoom)||planZoom||1); objects=d.objects||[]; normalizeObjectTextureScales(); clearSelection(); setScaleSelect(); updateZoomControls(); applyPlanZoom(); updateProps(); draw(); saveLocal(); }catch(e){console.warn(e)} }
 function setSelection(ids){ selectedIds=[...new Set((Array.isArray(ids)?ids:[ids]).filter(Boolean))]; selectedId=selectedIds[0]||null; }
 function clearSelection(){ selectedIds=[]; selectedId=null; }
 function isSelected(id){ return selectedIds.includes(id); }
@@ -590,7 +739,8 @@ function addObject(data){
   // La texture reste disponible dans le panneau Propriétés, mais elle n'est plus appliquée automatiquement.
   const defaultTexture = (data.texture !== undefined) ? data.texture : '';
 
-  const obj={id:uid(), name:t.label, height:t.h, price:0, rot:0, color:t.color, locked:false, texture:defaultTexture, shape:t.shape||data.shape||'', libraryId:t.source==='library'?t.id:'', ...data, texture:defaultTexture};
+  const defaultTextureScale = normalizeTextureScale(data.textureScale !== undefined ? data.textureScale : TEXTURE_SCALE_DEFAULT);
+  const obj={id:uid(), name:t.label, height:t.h, price:0, rot:0, color:t.color, locked:false, texture:defaultTexture, textureScale:defaultTextureScale, shape:t.shape||data.shape||'', libraryId:t.source==='library'?t.id:'', ...data, texture:defaultTexture, textureScale:defaultTextureScale};
   objects.push(obj);
   setSelection(obj.id);
   // On garde volontairement l'outil actif après création :
@@ -749,9 +899,21 @@ function drawGrid(){
 function patternFill(o, fallback){
   const t=getTool(o.type), tex=effectiveTextureName(o,t);
   if(tex && textureImages[tex]){
-    try{ return ctx.createPattern(textureImages[tex], 'repeat') || fallback; }catch(e){}
+    try{
+      const pat = ctx.createPattern(textureImages[tex], 'repeat');
+      if(pat && typeof pat.setTransform === 'function'){
+        const img = textureImages[tex];
+        const scaleFactor = textureScaleFactor(o);
+        const tilePx = Math.max(8, (textureTileMeter(tex) * majorGrid) * scaleFactor);
+        const sx = tilePx / Math.max(1, img.naturalWidth || img.width || tilePx);
+        const sy = tilePx / Math.max(1, img.naturalHeight || img.height || tilePx);
+        pat.setTransform(new DOMMatrix().scale(sx, sy));
+      }
+      return pat || fallback;
+    }catch(e){}
   }
   if(!tex || !texturePatterns[tex]) return fallback;
+  const scaleFactor = textureScaleFactor(o);
   const [a,b]=texturePatterns[tex];
   const pc=document.createElement('canvas'); pc.width=12; pc.height=12;
   const g=pc.getContext('2d'); g.fillStyle=a; g.fillRect(0,0,12,12); g.fillStyle=b;
@@ -760,7 +922,12 @@ function patternFill(o, fallback){
   else if(['bois'].includes(tex)){ g.strokeStyle=b; g.lineWidth=2; for(let x=1;x<12;x+=4){g.beginPath();g.moveTo(x,0);g.lineTo(x,12);g.stroke();} }
   else if(['eau','eau_naturelle'].includes(tex)){ g.strokeStyle=b; g.lineWidth=1.5; g.beginPath(); g.moveTo(0,8); g.quadraticCurveTo(3,4,6,8); g.quadraticCurveTo(9,12,12,8); g.stroke(); }
   else { g.fillStyle=b; g.fillRect(0,0,6,6); g.fillRect(6,6,6,6); }
-  return ctx.createPattern(pc,'repeat') || fallback;
+  const pat=ctx.createPattern(pc,'repeat');
+  if(pat && typeof pat.setTransform === 'function'){
+    const s = Math.max(1, scaleFactor);
+    pat.setTransform(new DOMMatrix().scale(s, s));
+  }
+  return pat || fallback;
 }
 function drawRoundRect(x,y,w,h,r){
   r=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
@@ -939,7 +1106,8 @@ function updateProps(){
   const info=document.getElementById('selectedInfo');
   ['propName','propHeight','propX','propY','propW','propD','propRot'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
   populateTextureSelectForSelection();
-  if(!o){ if(info) info.textContent='Aucun objet sélectionné'; populateTextureSelectForSelection(); return; }
+  updateTextureScaleControl();
+  if(!o){ if(info) info.textContent='Aucun objet sélectionné'; populateTextureSelectForSelection(); updateTextureScaleControl(); return; }
   if(arr.length>1){
     if(info) info.textContent=`${arr.length} objets sélectionnés`;
     const sameColor=arr.every(x=>(x.color||getTool(x.type).color)===(arr[0].color||getTool(arr[0].type).color));
@@ -947,6 +1115,7 @@ function updateProps(){
     const sameRot=arr.every(x=>(x.rot||0)===(arr[0].rot||0));
     const sameTexture=arr.every(x=>(x.texture||getTool(x.type).texture||'')===(arr[0].texture||getTool(arr[0].type).texture||''));
     populateTextureSelectForSelection();
+    updateTextureScaleControl();
     const texEl=document.getElementById('propTexture');
     if(texEl) texEl.value=sameTexture ? (arr[0].texture||'') : '';
     document.getElementById('propHeight').value=sameHeight ? (arr[0].height??getTool(arr[0].type).h??0) : '';
@@ -965,6 +1134,7 @@ function updateProps(){
   document.getElementById('propRot').value=o.rot||0;
   document.getElementById('propColor').value=o.color||t.color;
   populateTextureSelectForSelection();
+  updateTextureScaleControl();
   const texEl=document.getElementById('propTexture');
   if(texEl) texEl.value=o.texture||'';
 }
@@ -1035,8 +1205,21 @@ if(propTextureLive){
     arr.forEach(o=>{
       if(o.locked) return;
       if(tex==='') delete o.texture;
-      else o.texture=tex;
+      else { o.texture=tex; if(o.textureScale === undefined) o.textureScale = TEXTURE_SCALE_DEFAULT; }
     });
+    draw(); saveLocal(); if(currentView!=='2d') build3D(); updateProps();
+  });
+}
+
+ensureTextureScaleControl();
+const propTextureScaleLive=document.getElementById('propTextureScale');
+if(propTextureScaleLive){
+  propTextureScaleLive.addEventListener('change',()=>{
+    const arr=selectedObjects();
+    if(!arr.length) return;
+    pushHistory();
+    const scale=normalizeTextureScale(propTextureScaleLive.value);
+    arr.forEach(o=>{ if(!o.locked) o.textureScale=scale; });
     draw(); saveLocal(); if(currentView!=='2d') build3D(); updateProps();
   });
 }
@@ -1144,12 +1327,14 @@ document.getElementById('btnApplyProps').onclick=()=>{
   if(arr.length>1){
     const h=document.getElementById('propHeight').value, r=document.getElementById('propRot').value, c=document.getElementById('propColor').value;
     const texEl=document.getElementById('propTexture'), tex=texEl ? texEl.value : '';
-    arr.forEach(o=>{ if(!o.locked){ if(h!=='') o.height=+h||0; if(r!=='') o.rot=+r||0; if(c) o.color=c; if(texEl){ if(tex==='') delete o.texture; else o.texture=tex; } } });
+    const scaleEl=document.getElementById('propTextureScale'), scale=scaleEl ? normalizeTextureScale(scaleEl.value) : TEXTURE_SCALE_DEFAULT;
+    arr.forEach(o=>{ if(!o.locked){ if(h!=='') o.height=+h||0; if(r!=='') o.rot=+r||0; if(c) o.color=c; if(texEl){ if(tex==='') delete o.texture; else { o.texture=tex; if(o.textureScale === undefined) o.textureScale = TEXTURE_SCALE_DEFAULT; } } if(scaleEl) o.textureScale=scale; } });
     updateProps(); draw(); saveLocal(); if(currentView!=='2d') build3D(); return;
   }
   const o=arr[0];
   o.name=document.getElementById('propName').value||getTool(o.type).label; o.height=+document.getElementById('propHeight').value||0; o.rot=+document.getElementById('propRot').value||0; o.color=document.getElementById('propColor').value;
-  const texEl=document.getElementById('propTexture'); if(texEl){ if(texEl.value==='') delete o.texture; else o.texture=texEl.value; }
+  const texEl=document.getElementById('propTexture'); if(texEl){ if(texEl.value==='') delete o.texture; else { o.texture=texEl.value; if(o.textureScale === undefined) o.textureScale = TEXTURE_SCALE_DEFAULT; } }
+  const scaleEl=document.getElementById('propTextureScale'); if(scaleEl) o.textureScale=normalizeTextureScale(scaleEl.value);
   setObjectSizeMeters(o,{width:document.getElementById('propW').value, depth:document.getElementById('propD').value, length:document.getElementById('propW').value, diameter:document.getElementById('propD').value}); draw(); saveLocal(); if(currentView!=='2d') build3D();};
 document.getElementById('btnPreciseRight').onclick=openDimensionModal;
 document.getElementById('snapToggle').onchange=e=>{snapEnabled=e.target.checked;};
@@ -1161,7 +1346,7 @@ document.getElementById('showDims').onchange=e=>{showDims=e.target.checked; draw
 document.getElementById('scaleSelect').onchange=e=>{const [maj,snapv]=e.target.value.split('|').map(Number); majorGrid=maj; snapGrid=snapv; draw(); saveLocal();};
 document.getElementById('btnClear').onclick=()=>{if(confirm('Créer un nouveau plan ?')){pushHistory(); objects=[];clearSelection();draw();saveLocal();}};
 document.getElementById('btnSave').onclick=()=>download('bastplan-paysage.json', JSON.stringify({version:15, majorGrid, snapGrid, planZoom, objects}, null, 2));
-document.getElementById('fileLoad').onchange=e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{const data=JSON.parse(r.result); objects=data.objects||[]; majorGrid=data.majorGrid||data.grid||25; snapGrid=data.snapGrid||majorGrid; planZoom=clampZoom(Number(data.planZoom)||planZoom||1); clearSelection(); setScaleSelect(); updateZoomControls(); applyPlanZoom(); draw(); saveLocal();}; r.readAsText(f);};
+document.getElementById('fileLoad').onchange=e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{const data=JSON.parse(r.result); objects=data.objects||[]; normalizeObjectTextureScales(); majorGrid=data.majorGrid||data.grid||25; snapGrid=data.snapGrid||majorGrid; planZoom=clampZoom(Number(data.planZoom)||planZoom||1); clearSelection(); setScaleSelect(); updateZoomControls(); applyPlanZoom(); draw(); saveLocal();}; r.readAsText(f);};
 document.getElementById('btnExport').onclick=exportPNG;
 function exportPNG(){
   draw();
@@ -1214,7 +1399,7 @@ function preparePrint(kind){
 function download(name,text){downloadBlob(name,new Blob([text],{type:'application/json'}));}
 function downloadBlob(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);a.remove();}
 function saveLocal(){localStorage.setItem('bastplan_paysage', JSON.stringify({majorGrid,snapGrid,objects,planZoom})); if(currentView==='split') build3D();}
-function loadLocal(){try{const d=JSON.parse(localStorage.getItem('bastplan_paysage')||'{}'); objects=d.objects||[]; majorGrid=d.majorGrid||d.grid||25; snapGrid=d.snapGrid||majorGrid; planZoom=clampZoom(Number(d.planZoom)||1);}catch{objects=[]; planZoom=1;}}
+function loadLocal(){try{const d=JSON.parse(localStorage.getItem('bastplan_paysage')||'{}'); objects=d.objects||[]; normalizeObjectTextureScales(); majorGrid=d.majorGrid||d.grid||25; snapGrid=d.snapGrid||majorGrid; planZoom=clampZoom(Number(d.planZoom)||1);}catch{objects=[]; planZoom=1;}}
 function setScaleSelect(){ const v=`${majorGrid}|${snapGrid}`; const s=document.getElementById('scaleSelect'); if([...s.options].some(o=>o.value===v)) s.value=v; }
 
 function setView(v){ currentView=v; canvas.style.display=(v==='3d')?'none':'block'; view3d.style.display=(v==='2d')?'none':'block'; view3d.classList.toggle('split3d', v==='split'); ['btn2d','btn3d','btnSplit'].forEach(id=>document.getElementById(id).classList.remove('active')); document.getElementById(v==='2d'?'btn2d':v==='3d'?'btn3d':'btnSplit').classList.add('active'); if(v!=='2d') build3D(); }
@@ -1227,9 +1412,17 @@ function worldX(x,b){ return (x-(b.minX+b.maxX)/2)/majorGrid; }
 function worldZ(y,b){ return (y-(b.minY+b.maxY)/2)/majorGrid; }
 function build3D(){ if(window.THREE){ try{ buildThree3D(); return; }catch(err){ console.warn('Fallback 3D canvas',err); } } buildCanvas3D(); }
 const threeTextureCache={};
-function loadThreeTexture(path, repeat=2){
+function loadThreeTexture(path, repeat=2, isColorMap=false){
   if(!window.THREE || !path) return null;
-  if(threeTextureCache[path]) return threeTextureCache[path];
+
+  const rx = (typeof repeat === 'object') ? Number(repeat.x || 1) : Number(repeat || 1);
+  const ry = (typeof repeat === 'object') ? Number(repeat.y || rx || 1) : Number(repeat || 1);
+  const repeatX = Math.max(1, rx);
+  const repeatY = Math.max(1, ry);
+
+  const cacheKey = `${path}|${repeatX.toFixed(3)}x${repeatY.toFixed(3)}|${isColorMap ? 'color' : 'data'}`;
+  if(threeTextureCache[cacheKey]) return threeTextureCache[cacheKey];
+
   const loader=new THREE.TextureLoader();
   const tex=loader.load(path, () => {
     tex.needsUpdate = true;
@@ -1237,36 +1430,87 @@ function loadThreeTexture(path, repeat=2){
       try { threeRenderer.render?.(threeRenderer.__scene, threeRenderer.__camera); } catch(e) {}
     }
   }, undefined, () => console.warn('Texture 3D introuvable :', path));
+
   tex.wrapS=THREE.RepeatWrapping;
   tex.wrapT=THREE.RepeatWrapping;
-  tex.repeat.set(repeat, repeat);
-  if(THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-  threeTextureCache[path]=tex;
+  tex.repeat.set(repeatX, repeatY);
+  tex.anisotropy = 8;
+
+  // Seule la carte couleur doit être en sRGB.
+  // Les normal/roughness/AO/displacement doivent rester en espace linéaire.
+  if(isColorMap && THREE.SRGBColorSpace) {
+    tex.colorSpace = THREE.SRGBColorSpace;
+  } else if(!isColorMap && THREE.NoColorSpace) {
+    tex.colorSpace = THREE.NoColorSpace;
+  }
+
+  threeTextureCache[cacheKey]=tex;
   return tex;
 }
+
+function prepareGeometryForPBR(geometry){
+  if(!geometry) return geometry;
+
+  // L'aoMap de Three.js a besoin d'un second jeu d'UV.
+  // Beaucoup de géométries ont seulement "uv", donc on le duplique en "uv2".
+  if(geometry.attributes && geometry.attributes.uv && !geometry.attributes.uv2){
+    geometry.setAttribute('uv2', geometry.attributes.uv.clone());
+  }
+
+  if(typeof geometry.computeVertexNormals === 'function'){
+    geometry.computeVertexNormals();
+  }
+
+  return geometry;
+}
+
+function makeMesh3D(geometry, material){
+  prepareGeometryForPBR(geometry);
+  return new THREE.Mesh(geometry, material);
+}
+
 function materialForObject3D(o,t){
   const texName=effectiveTextureName(o,t);
   const baseColor=cssColorToHex(o.color||t.color||'#999999');
 
-  // En 3D on garde toujours la couleur de base.
-  // Avant : texture = color:0xffffff, ce qui pouvait donner un rendu noir si la texture chargeait mal.
   if(!texName){
-    return new THREE.MeshLambertMaterial({color:baseColor, side:THREE.DoubleSide});
-  }
-
-  const pbr=texturePBRPaths[texName];
-  const colorPath = pbr?.color || textureAssetPaths[texName] || textureFallbackPaths[texName];
-  const colorMap = colorPath ? loadThreeTexture(colorPath, texName==='pelouse'?8:3) : null;
-
-  if(colorMap){
-    return new THREE.MeshLambertMaterial({
+    return new THREE.MeshStandardMaterial({
       color:baseColor,
-      map:colorMap,
+      roughness:0.85,
+      metalness:0,
       side:THREE.DoubleSide
     });
   }
 
-  return new THREE.MeshLambertMaterial({color:baseColor, side:THREE.DoubleSide});
+  const repeat = textureRepeatForObject(o,t,texName);
+  const pbr=texturePBRPaths[texName];
+  const colorPath = pbr?.color || textureAssetPaths[texName] || textureFallbackPaths[texName];
+
+  const colorMap = colorPath ? loadThreeTexture(colorPath, repeat, true) : null;
+  const normalMap = pbr?.normal ? loadThreeTexture(pbr.normal, repeat, false) : null;
+  const roughnessMap = pbr?.roughness ? loadThreeTexture(pbr.roughness, repeat, false) : null;
+  const aoMap = pbr?.ao ? loadThreeTexture(pbr.ao, repeat, false) : null;
+  const displacementMap = pbr?.displacement ? loadThreeTexture(pbr.displacement, repeat, false) : null;
+
+  const mat = new THREE.MeshStandardMaterial({
+    color:baseColor,
+    map:colorMap || null,
+    normalMap:normalMap || null,
+    roughnessMap:roughnessMap || null,
+    aoMap:aoMap || null,
+    displacementMap:displacementMap || null,
+    displacementScale: displacementMap ? 0.015 : 0,
+    displacementBias: 0,
+    roughness: roughnessMap ? 1 : 0.82,
+    metalness:0,
+    side:THREE.DoubleSide
+  });
+
+  if(normalMap){
+    mat.normalScale = new THREE.Vector2(0.65, 0.65);
+  }
+
+  return mat;
 }
 function buildThree3D(){
   view3d.innerHTML=''; if(threeRenderer) threeRenderer.dispose(); const w=view3d.clientWidth||900,h=view3d.clientHeight||600,b=bounds();
@@ -1276,7 +1520,7 @@ function buildThree3D(){
   renderer.__scene=scene; renderer.__camera=camera;
   scene.add(new THREE.HemisphereLight(0xffffff,0x63705d,2.4)); const sun=new THREE.DirectionalLight(0xffffff,1.8); sun.position.set(15,25,10); scene.add(sun);
   const baseMaterial = new THREE.MeshLambertMaterial({color:0x9fc28c, side:THREE.DoubleSide});
-  const base=new THREE.Mesh(new THREE.PlaneGeometry(Math.max(30,(b.maxX-b.minX)/majorGrid+10), Math.max(20,(b.maxY-b.minY)/majorGrid+10)), baseMaterial); base.rotation.x=-Math.PI/2; scene.add(base);
+  const base=makeMesh3D(new THREE.PlaneGeometry(Math.max(30,(b.maxX-b.minX)/majorGrid+10), Math.max(20,(b.maxY-b.minY)/majorGrid+10)), baseMaterial); base.rotation.x=-Math.PI/2; scene.add(base);
   objects.forEach(o=>add3D(scene,o,b));
   let rot=0; function animate(){rot+=0.002; camera.position.x=Math.sin(rot)*22; camera.position.z=Math.cos(rot)*22; camera.lookAt(0,0,0); requestAnimationFrame(animate); renderer.render(scene,camera)} animate();
 }
@@ -1349,6 +1593,25 @@ function makeFlatShapeGeometryFromPoints(points,b){
   shape.closePath();
   const geo=new THREE.ShapeGeometry(shape);
   geo.rotateX(-Math.PI/2);
+
+  // UV propres pour les surfaces libres : la texture se base sur les mètres du plan
+  // et ne s'étire plus en une seule photo sur toute la surface.
+  if(geo.attributes && geo.attributes.position){
+    const pos=geo.attributes.position;
+    const uv=[];
+    let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
+    for(let i=0;i<pos.count;i++){
+      const x=pos.getX(i), z=pos.getZ(i);
+      minX=Math.min(minX,x); maxX=Math.max(maxX,x);
+      minZ=Math.min(minZ,z); maxZ=Math.max(maxZ,z);
+    }
+    const w=Math.max(0.001,maxX-minX), d=Math.max(0.001,maxZ-minZ);
+    for(let i=0;i<pos.count;i++){
+      uv.push((pos.getX(i)-minX)/w, (pos.getZ(i)-minZ)/d);
+    }
+    geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv,2));
+  }
+
   geo.computeVertexNormals();
   return geo;
 }
@@ -1397,7 +1660,7 @@ function add3D(scene,o,b){
     const len=Math.max(.05, Math.hypot(o.x2-o.x1,o.y2-o.y1)/majorGrid);
     const thickness = Math.max(.06, Number(o.widthM||t.widthM||0.25));
     const geo=new THREE.BoxGeometry(len,h,thickness);
-    const m=new THREE.Mesh(geo,mat);
+    const m=makeMesh3D(geo,mat);
     m.position.set((worldX(o.x1,b)+worldX(o.x2,b))/2,y,(worldZ(o.y1,b)+worldZ(o.y2,b))/2);
     m.rotation.y=-Math.atan2(o.y2-o.y1,o.x2-o.x1);
     scene.add(m); return;
@@ -1406,7 +1669,7 @@ function add3D(scene,o,b){
   if(o.r){
     let geo=o.type==='arbre'||String(o.libraryId).includes('arbre') ? new THREE.ConeGeometry(Math.max(.35,o.r/majorGrid),h,18) : new THREE.CylinderGeometry(Math.max(.25,o.r/majorGrid*.7),Math.max(.3,o.r/majorGrid),h,24);
     if(o.type==='bbq'||String(o.libraryId).includes('bbq')) geo=new THREE.BoxGeometry(Math.max(.4,o.r/majorGrid*1.4),h,Math.max(.4,o.r/majorGrid*1.4));
-    const m=new THREE.Mesh(geo,mat); m.position.set(worldX(o.x,b),y,worldZ(o.y,b)); scene.add(m); return;
+    const m=makeMesh3D(geo,mat); m.position.set(worldX(o.x,b),y,worldZ(o.y,b)); scene.add(m); return;
   }
 
   if(o.points){
@@ -1414,7 +1677,7 @@ function add3D(scene,o,b){
       const thickness=Math.max(.06, Number(o.widthM||t.widthM||0.25));
       const made=makeCurve3D(o.points,b,y,thickness);
       if(made){
-        const m=new THREE.Mesh(made.geometry,mat);
+        const m=makeMesh3D(made.geometry,mat);
         if(made.position) m.position.copy(made.position);
         if(made.rotationY!==undefined) m.rotation.y=made.rotationY;
         scene.add(m);
@@ -1425,7 +1688,7 @@ function add3D(scene,o,b){
     // Forme libre fermée : vraie surface 3D, pas gros carré noir.
     const geo=makeFlatShapeGeometryFromPoints(o.points,b);
     if(geo){
-      const m=new THREE.Mesh(geo,mat);
+      const m=makeMesh3D(geo,mat);
       m.position.y = water ? 0.035 : Math.max(0.025, h/2);
       scene.add(m);
       return;
@@ -1433,19 +1696,19 @@ function add3D(scene,o,b){
 
     const c=centroid(o.points), area=measure(o), side=Math.sqrt(Math.max(.2,area));
     const geoFallback=new THREE.BoxGeometry(side, h, side);
-    const m=new THREE.Mesh(geoFallback,mat); m.position.set(worldX(c.x,b),y,worldZ(c.y,b)); scene.add(m); return;
+    const m=makeMesh3D(geoFallback,mat); m.position.set(worldX(c.x,b),y,worldZ(c.y,b)); scene.add(m); return;
   }
 
   if(o.shape==='ellipse'||o.shape==='circle'||water){
     const geo=new THREE.CylinderGeometry(.5,.5,h,64);
-    const m=new THREE.Mesh(geo,mat);
+    const m=makeMesh3D(geo,mat);
     m.scale.set(Math.max(.1,o.w/majorGrid),1,Math.max(.1,o.h/majorGrid));
     m.position.set(worldX(o.x+o.w/2,b),y,worldZ(o.y+o.h/2,b));
     scene.add(m); return;
   }
 
   const geo=new THREE.BoxGeometry(Math.max(.1,o.w/majorGrid),h,Math.max(.1,o.h/majorGrid));
-  const m=new THREE.Mesh(geo,mat); m.position.set(worldX(o.x+o.w/2,b),y,worldZ(o.y+o.h/2,b)); scene.add(m);
+  const m=makeMesh3D(geo,mat); m.position.set(worldX(o.x+o.w/2,b),y,worldZ(o.y+o.h/2,b)); scene.add(m);
 }
 function buildCanvas3D(){
   view3d.innerHTML=''; view3d.appendChild(fallback3d); const c=fallback3d, dpr=window.devicePixelRatio||1, rect=view3d.getBoundingClientRect(); c.width=rect.width*dpr; c.height=rect.height*dpr; c.style.width=rect.width+'px'; c.style.height=rect.height+'px'; const g=c.getContext('2d'); g.scale(dpr,dpr); g.fillStyle='#d7e4d2'; g.fillRect(0,0,rect.width,rect.height); g.fillStyle='#607b52'; g.font='14px Arial'; g.fillText('Vue 3D simplifiée - Three.js non chargé, fallback canvas actif',20,28);
