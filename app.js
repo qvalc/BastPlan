@@ -129,7 +129,21 @@ function modeForShape(item, shape){
 function allowedShape(item, requested){
   const shapes=item.shapes || ['rectangle'];
   if(requested==='auto') return true;
-  return shapes.includes(requested) || (requested==='square' && shapes.includes('rectangle')) || (requested==='circle' && shapes.includes('ellipse'));
+  if(shapes.includes(requested)) return true;
+  if(requested==='square' && shapes.includes('rectangle')) return true;
+  if(requested==='circle' && shapes.includes('ellipse')) return true;
+
+  // Correction v26 :
+  // Une "courbe" est un tracé souple. Elle doit donc être disponible
+  // pour les objets pouvant déjà être dessinés en ligne ou en forme libre
+  // (haie, bordure, gravier, pelouse, massif, eau, etc.).
+  // On évite seulement les objets ponctuels purs.
+  if(requested==='curve'){
+    const mode = item && item.mode ? item.mode : '';
+    return mode !== 'point' && (shapes.includes('line') || shapes.includes('free') || mode==='line' || mode==='poly' || mode==='rect' || mode==='ellipse');
+  }
+
+  return false;
 }
 function shapeForItem(item, requested){
   if(requested==='auto') return (item.shapes && item.shapes[0]) || item.mode || 'rectangle';
@@ -293,9 +307,19 @@ function compatibleTextureKeys(o,t){
   let keys = textureFamilies[base] || (base ? [base] : []);
   const label = ((o && o.name) || (t && t.label) || '').toLowerCase();
   const type = String((o && o.type) || (t && t.id) || '').toLowerCase();
+  const isCurve = !!(o && (o.shape === 'curve' || o.open)) || (t && t.mode === 'curve');
+
   if(type==='pelouse' || label.includes('pelouse')) keys = ['pelouse','prairie'];
   if(type==='gravier' || label.includes('gravier')) keys = ['gravier','dolomie'];
   if(type==='eau' || type==='piscine' || label.includes('piscine') || label.includes('bassin') || label.includes('eau')) keys = ['eau','eau_naturelle'];
+
+  // Correction v26 :
+  // L'outil "Courbe / tracé souple" n'a pas de texture par défaut.
+  // Sans cette liste, le menu Texture ne proposait rien quand une courbe était sélectionnée.
+  if(isCurve && !keys.length){
+    keys = ['pelouse','prairie','gravier','dolomie','ecorce','massif','terre','paves','dalles','bois','pierre','eau','eau_naturelle','haie_dense','haie_fine','haie_feuillu','haie_rouge','haie_sombre','conifere','cloture'];
+  }
+
   return [...new Set(keys.filter(Boolean))];
 }
 function populateTextureSelectForSelection(){
@@ -547,7 +571,14 @@ function duplicateSelection(){ copySelection(); pasteSelection(); }
 function addObject(data){
   pushHistory();
   const t=getTool(data.type);
-  const obj={id:uid(), name:t.label, height:t.h, price:0, rot:0, color:t.color, locked:false, texture:'', shape:t.shape||data.shape||'', libraryId:t.source==='library'?t.id:'', ...data};
+
+  // Correction v26 :
+  // Avant, tous les nouveaux objets étaient créés avec texture:''.
+  // Donc une pelouse, un gravier ou un massif dessiné en "courbe"
+  // perdait sa texture d'origine dès sa création.
+  const defaultTexture = (data.texture !== undefined) ? data.texture : (t.texture || '');
+
+  const obj={id:uid(), name:t.label, height:t.h, price:0, rot:0, color:t.color, locked:false, texture:defaultTexture, shape:t.shape||data.shape||'', libraryId:t.source==='library'?t.id:'', ...data, texture:defaultTexture};
   objects.push(obj);
   setSelection(obj.id);
   // On garde volontairement l'outil actif après création :
@@ -779,7 +810,7 @@ function drawObj(o){
   if(o.shape==='rounded'){ drawRoundRect(o.x,o.y,o.w,o.h,Math.min(o.w,o.h)*.15); ctx.fill(); ctx.stroke(); label(o,o.x+o.w/2,o.y+o.h/2); if(showDims) drawRectDims(o); return; }
   ctx.fillRect(o.x,o.y,o.w,o.h);ctx.strokeRect(o.x,o.y,o.w,o.h);label(o,o.x+o.w/2,o.y+o.h/2); if(showDims) drawRectDims(o);
 }
-function drawPreview(){ let x=Math.min(drawing.start.x,drawing.end.x), y=Math.min(drawing.start.y,drawing.end.y), w=Math.abs(drawing.end.x-drawing.start.x), h=Math.abs(drawing.end.y-drawing.start.y); if(activeTool.shape==='square'||activeTool.shape==='circle'){ const m=Math.max(w,h); w=h=m; } const o={id:'preview',type:activeTool.id,libraryId:activeTool.source==='library'?activeTool.id:'',shape:activeTool.shape||'',texture:'',color:activeTool.color,...(activeTool.mode==='line'?{x1:drawing.start.x,y1:drawing.start.y,x2:drawing.end.x,y2:drawing.end.y}:{x,y,w,h})}; ctx.globalAlpha=.45;drawObj(o);ctx.globalAlpha=1; }
+function drawPreview(){ let x=Math.min(drawing.start.x,drawing.end.x), y=Math.min(drawing.start.y,drawing.end.y), w=Math.abs(drawing.end.x-drawing.start.x), h=Math.abs(drawing.end.y-drawing.start.y); if(activeTool.shape==='square'||activeTool.shape==='circle'){ const m=Math.max(w,h); w=h=m; } const o={id:'preview',type:activeTool.id,libraryId:activeTool.source==='library'?activeTool.id:'',shape:activeTool.shape||'',texture:activeTool.texture||'',color:activeTool.color,...(activeTool.mode==='line'?{x1:drawing.start.x,y1:drawing.start.y,x2:drawing.end.x,y2:drawing.end.y}:{x,y,w,h})}; ctx.globalAlpha=.45;drawObj(o);ctx.globalAlpha=1; }
 function label(o,x,y){ctx.fillStyle='#172017';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillText(o.name||getTool(o.type).label,x,y);}
 function dot(x,y){ctx.fillStyle='#111';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();}
 function centroid(pts){return pts.reduce((a,p)=>({x:a.x+p.x/pts.length,y:a.y+p.y/pts.length}),{x:0,y:0});}
