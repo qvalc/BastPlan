@@ -1,0 +1,92 @@
+[
+  {
+    "id": "lib_piscine_rect",
+    "label": "Piscine rectangulaire",
+    "category": "Eau / Piscines",
+    "mode": "rect",
+    "color": "#4fbde8",
+    "unit": "m²",
+    "h": -1.5,
+    "shapes": [
+      "rectangle",
+      "square"
+    ],
+    "texture": "eau",
+    "hauteurDefaut": -1.5
+  },
+  {
+    "id": "lib_piscine_arrondie",
+    "label": "Piscine arrondie",
+    "category": "Eau / Piscines",
+    "mode": "rect",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": -1.5,
+    "shapes": [
+      "rectangle",
+      "ellipse"
+    ],
+    "texture": "eau",
+    "hauteurDefaut": -1.5
+  },
+  {
+    "id": "lib_piscine_ovale",
+    "label": "Piscine ovale",
+    "category": "Eau / Piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": -1.5,
+    "shapes": [
+      "ellipse",
+      "circle"
+    ],
+    "texture": "eau",
+    "hauteurDefaut": -1.5
+  },
+  {
+    "id": "lib_plan_eau",
+    "label": "Plan d’eau",
+    "category": "Eau / Bassins",
+    "mode": "ellipse",
+    "color": "#55aee8",
+    "unit": "m²",
+    "h": -0.6,
+    "shapes": [
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "texture": "eau",
+    "hauteurDefaut": -0.6
+  },
+  {
+    "id": "lib_bassin_naturel",
+    "label": "Bassin naturel",
+    "category": "Eau / Bassins",
+    "mode": "poly",
+    "color": "#4b9bc9",
+    "unit": "m²",
+    "h": -0.6,
+    "shapes": [
+      "free",
+      "ellipse",
+      "circle"
+    ],
+    "texture": "eau_naturelle",
+    "hauteurDefaut": -0.6
+  },
+  {
+    "id": "lib_fontaine",
+    "label": "Fontaine",
+    "category": "Eau / Bassins",
+    "mode": "point",
+    "color": "#5bbce2",
+    "unit": "pc",
+    "h": 0.8,
+    "shapes": [
+      "point"
+    ],
+    "texture": "eau"
+  }
+]

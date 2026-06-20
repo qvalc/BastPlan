@@ -1,0 +1,88 @@
+[
+  {
+    "id": "lib_bbq",
+    "label": "BBQ",
+    "category": "Équipements",
+    "mode": "point",
+    "color": "#333333",
+    "unit": "pc",
+    "h": 1.1,
+    "shapes": [
+      "point"
+    ],
+    "texture": "metal",
+    "hauteurDefaut": 1.1
+  },
+  {
+    "id": "lib_brasero",
+    "label": "Brasero",
+    "category": "Équipements",
+    "mode": "point",
+    "color": "#6d3b24",
+    "unit": "pc",
+    "h": 0.45,
+    "shapes": [
+      "point"
+    ],
+    "texture": "metal"
+  },
+  {
+    "id": "lib_pergola",
+    "label": "Pergola",
+    "category": "Équipements",
+    "mode": "rect",
+    "color": "#8b6b4d",
+    "unit": "m²",
+    "h": 2.4,
+    "shapes": [
+      "rectangle",
+      "square"
+    ],
+    "texture": "bois",
+    "hauteurDefaut": 2.4
+  },
+  {
+    "id": "lib_jacuzzi",
+    "label": "Jacuzzi",
+    "category": "Équipements",
+    "mode": "ellipse",
+    "color": "#6bb9d7",
+    "unit": "pc",
+    "h": -0.9,
+    "shapes": [
+      "circle",
+      "ellipse",
+      "square"
+    ],
+    "texture": "eau",
+    "hauteurDefaut": -0.9
+  },
+  {
+    "id": "lib_salon_jardin",
+    "label": "Salon de jardin",
+    "category": "Équipements",
+    "mode": "point",
+    "color": "#8b6b4d",
+    "unit": "pc",
+    "h": 0.7,
+    "shapes": [
+      "point"
+    ],
+    "texture": "bois"
+  },
+  {
+    "id": "lib_aire_jeux",
+    "label": "Aire de jeux",
+    "category": "Équipements",
+    "mode": "rect",
+    "color": "#d5a245",
+    "unit": "m²",
+    "h": 0.1,
+    "shapes": [
+      "rectangle",
+      "circle",
+      "free"
+    ],
+    "texture": "copeaux"
+  }
+]

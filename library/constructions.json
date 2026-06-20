@@ -1,0 +1,70 @@
+[
+  {
+    "id": "lib_maison",
+    "label": "Maison existante",
+    "category": "Constructions",
+    "mode": "rect",
+    "color": "#ded8ce",
+    "unit": "m²",
+    "h": 3,
+    "shapes": [
+      "rectangle",
+      "square"
+    ],
+    "texture": "maison"
+  },
+  {
+    "id": "lib_abri",
+    "label": "Abri de jardin",
+    "category": "Constructions",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 2.3,
+    "shapes": [
+      "rectangle",
+      "square"
+    ],
+    "texture": "bois"
+  },
+  {
+    "id": "lib_garage",
+    "label": "Garage",
+    "category": "Constructions",
+    "mode": "rect",
+    "color": "#b8afa5",
+    "unit": "m²",
+    "h": 2.6,
+    "shapes": [
+      "rectangle",
+      "square"
+    ],
+    "texture": "maison"
+  },
+  {
+    "id": "lib_carport",
+    "label": "Carport",
+    "category": "Constructions",
+    "mode": "rect",
+    "color": "#9c8265",
+    "unit": "m²",
+    "h": 2.4,
+    "shapes": [
+      "rectangle"
+    ],
+    "texture": "bois"
+  },
+  {
+    "id": "lib_serre",
+    "label": "Serre",
+    "category": "Constructions",
+    "mode": "rect",
+    "color": "#b8d6c9",
+    "unit": "m²",
+    "h": 2.2,
+    "shapes": [
+      "rectangle"
+    ],
+    "texture": "verre"
+  }
+]

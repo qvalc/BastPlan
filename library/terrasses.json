@@ -1,0 +1,50 @@
+[
+  {
+    "id": "lib_terrasse_bois",
+    "label": "Terrasse bois",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#b8834c",
+    "unit": "m²",
+    "h": 0.15,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "bois",
+    "hauteurDefaut": 0.15
+  },
+  {
+    "id": "lib_terrasse_pierre",
+    "label": "Terrasse pierre",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#9c9f9f",
+    "unit": "m²",
+    "h": 0.15,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "pierre",
+    "hauteurDefaut": 0.15
+  },
+  {
+    "id": "lib_terrasse_composite",
+    "label": "Terrasse composite",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#7a5b45",
+    "unit": "m²",
+    "h": 0.15,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "bois",
+    "hauteurDefaut": 0.15
+  }
+]

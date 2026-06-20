@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BastPlan Paysage - Prototype avancé v19 textures 2D/3D</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><strong>BastPlan Paysage</strong><span>v20-textures-fiables</span></div>
+    <div class="top-actions">
+      <button id="btnClear">Nouveau</button>
+      <label class="file-btn">Ouvrir<input type="file" id="fileLoad" accept="application/json" /></label>
+      <button id="btnSave">Enregistrer</button>
+      <button id="btnExport">Exporter PNG</button>
+      <button id="btnPrint">Imprimer / PDF</button>
+      <span class="sep"></span>
+      <button id="btnUndo">↶ Annuler</button>
+      <button id="btnRedo">↷ Rétablir</button>
+      <span class="sep"></span>
+      <button id="btn2d" class="active">Plan 2D</button>
+      <button id="btn3d">Vue 3D</button>
+      <button id="btnSplit">Aperçu 2D+3D</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="left-panel">
+      <h2>Outils</h2>
+      <button id="selectToolBtn" class="tool main-select">Sélection / déplacement</button>
+      <details id="objectDrawer" class="object-drawer" open>
+        <summary>Objets du plan</summary>
+        <div class="tool-grid" id="tools"></div>
+      </details>
+      <details id="libraryDrawer" class="object-drawer library-drawer">
+        <summary>Bibliothèque paysagère</summary>
+        <label class="library-search">Rechercher
+          <input id="librarySearch" placeholder="Ex : laurier, piscine, gravier..." />
+        </label>
+        <label>Forme de l’objet
+          <select id="shapeSelect">
+            <option value="auto">Automatique</option>
+            <option value="line">Ligne</option>
+            <option value="rectangle">Rectangle</option>
+            <option value="square">Carré</option>
+            <option value="ellipse">Ovale</option>
+            <option value="circle">Rond</option>
+            <option value="free">Forme libre</option>
+            <option value="point">Point / symbole</option>
+          </select>
+        </label>
+        <div id="libraryPanel" class="library-panel"></div>
+      </details>
+
+      <h2>Réglages</h2>
+      <label>Grille / précision
+        <select id="scaleSelect">
+          <option value="25|25">1 m</option>
+          <option value="25|12.5">50 cm</option>
+          <option value="25|2.5">10 cm</option>
+          <option value="25|0.25">1 cm</option>
+        </select>
+      </label>
+      <label class="check"><input type="checkbox" id="snapToggle" checked /> Accrochage</label>
+      <label class="check"><input type="checkbox" id="showDims" checked /> Afficher les côtes</label>
+      <label>Format papier
+        <select id="paperSelect">
+          <option value="a4 landscape">A4 paysage</option>
+          <option value="a4 portrait">A4 portrait</option>
+          <option value="a3 landscape">A3 paysage</option>
+          <option value="a3 portrait">A3 portrait</option>
+        </select>
+      </label>
+    </aside>
+
+    <section class="workspace">
+      <canvas id="plan" width="1400" height="850"></canvas>
+      <div id="view3d"><canvas id="fallback3d"></canvas></div>
+      <div id="contextMenu" class="context-menu">
+        <button data-action="copy">Copier <span>Ctrl+C</span></button>
+        <button data-action="paste">Coller <span>Ctrl+V</span></button>
+        <button data-action="duplicate">Dupliquer</button>
+        <button data-action="dimensions">Dimensions précises…</button>
+        <button data-action="front">Mettre au premier plan</button>
+        <button data-action="back">Mettre à l’arrière</button>
+        <button data-action="lock">Verrouiller / déverrouiller</button>
+        <button data-action="delete" class="danger">Supprimer <span>Suppr</span></button>
+      </div>
+    </section>
+
+    <aside class="right-panel">
+      <h2>Propriétés</h2>
+      <div id="selectedInfo" class="selected-info">Aucun objet sélectionné</div>
+      <label>Nom / texte
+        <input id="propName" placeholder="Ex : Laurier, bassin, BBQ..." />
+      </label>
+      <div class="two-cols">
+        <label>X (m)<input id="propX" type="number" step="0.01"></label>
+        <label>Y (m)<input id="propY" type="number" step="0.01"></label>
+      </div>
+      <div class="two-cols">
+        <label>Largeur / longueur (m)<input id="propW" type="number" step="0.01"></label>
+        <label>Profondeur / diamètre (m)<input id="propD" type="number" step="0.01"></label>
+      </div>
+      <div class="two-cols">
+        <label>Hauteur 3D (m)<input id="propHeight" type="number" step="0.1"></label>
+        <label>Rotation (°)<input id="propRot" type="number" step="1"></label>
+      </div>
+      <label>Couleur
+        <input id="propColor" type="color" value="#7fcf63" />
+      </label>
+      <label>Texture
+        <select id="propTexture"></select>
+      </label>
+      <div class="panel-actions">
+        <button id="btnApplyProps">Appliquer</button>
+        <button id="btnPreciseRight">Dimensions précises…</button>
+      </div>
+      <h2>Résumé des quantités</h2>
+      <div id="summary" class="summary"></div>
+    </aside>
+  </main>
+
+  <div id="printModal" class="modal-backdrop">
+    <div class="modal-box">
+      <h2>Imprimer / PDF</h2>
+      <p class="small">Choisis ce que tu veux imprimer. Le plan est ajusté automatiquement pour remplir la feuille.</p>
+      <div class="print-options">
+        <button id="btnPrint2D">Plan 2D uniquement</button>
+        <button id="btnPrint3D">Vue 3D uniquement</button>
+        <button id="btnPrintBoth">Plan 2D + Vue 3D</button>
+      </div>
+      <div class="modal-actions">
+        <button id="btnPrintCancel">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="printArea" class="print-area"></div>
+
+  <div id="dimensionModal" class="modal-backdrop">
+    <div class="modal-box">
+      <h2>Dimensions précises</h2>
+      <p class="small" id="dimHelp">Ajuste les dimensions de l’objet sélectionné.</p>
+      <div id="dimFields"></div>
+      <div class="modal-actions">
+        <button id="btnDimCancel">Annuler</button>
+        <button id="btnDimApply">Appliquer</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Unité : mètre (m) · Zoom navigateur possible · Maintenir MAJ pour angles libres selon besoin · Clic droit pour le menu · Ctrl+glisser ajoute · Alt+glisser retire · Double-clic édite</footer>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

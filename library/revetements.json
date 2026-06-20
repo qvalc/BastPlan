@@ -1,0 +1,134 @@
+[
+  {
+    "id": "lib_pelouse",
+    "label": "Pelouse",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#7fcf63",
+    "unit": "m²",
+    "h": 0.03,
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "texture": "pelouse"
+  },
+  {
+    "id": "lib_prairie",
+    "label": "Prairie fleurie",
+    "category": "Revêtements",
+    "mode": "poly",
+    "color": "#9fd36f",
+    "unit": "m²",
+    "h": 0.04,
+    "shapes": [
+      "free",
+      "rectangle",
+      "ellipse"
+    ],
+    "texture": "prairie"
+  },
+  {
+    "id": "lib_gravier_gris",
+    "label": "Gravier gris",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#c7c7c0",
+    "unit": "m²",
+    "h": 0.02,
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "free"
+    ],
+    "texture": "gravier",
+    "hauteurDefaut": 0.02
+  },
+  {
+    "id": "lib_gravier_jaune",
+    "label": "Gravier jaune",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#d8c37a",
+    "unit": "m²",
+    "h": 0.02,
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "free"
+    ],
+    "texture": "gravier",
+    "hauteurDefaut": 0.02
+  },
+  {
+    "id": "lib_dolomie",
+    "label": "Dolomie",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#d6c98d",
+    "unit": "m²",
+    "h": 0.02,
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "free"
+    ],
+    "texture": "dolomie",
+    "hauteurDefaut": 0.02
+  },
+  {
+    "id": "lib_ecorce",
+    "label": "Écorces",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#8b4d2e",
+    "unit": "m²",
+    "h": 0.05,
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "free"
+    ],
+    "texture": "ecorce",
+    "hauteurDefaut": 0.05
+  },
+  {
+    "id": "lib_paves",
+    "label": "Pavés",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#a8a8a8",
+    "unit": "m²",
+    "h": 0.1,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "paves",
+    "hauteurDefaut": 0.1
+  },
+  {
+    "id": "lib_dalles",
+    "label": "Dalles",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.1,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "dalles",
+    "hauteurDefaut": 0.1
+  }
+]

@@ -1,0 +1,262 @@
+[
+  {
+    "id": "lib_haie_laurier_palme",
+    "label": "Laurier palme",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.7,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_dense",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_laurier_portugal",
+    "label": "Laurier du Portugal",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#245f34",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.55,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_fine",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_hetre",
+    "label": "Hêtre",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#6d8f34",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.55,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_feuillu",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_charme",
+    "label": "Charme",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#4f8b3b",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.55,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_feuillu",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_troene",
+    "label": "Troène",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#3f7e3a",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.5,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_dense",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_photinia",
+    "label": "Photinia",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#7f2f37",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.6,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_rouge",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_if",
+    "label": "If",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#1f5f2e",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.55,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_sombre",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_thuya",
+    "label": "Thuya",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#1f6b38",
+    "unit": "m",
+    "h": 2,
+    "widthM": 0.65,
+    "shapes": [
+      "line"
+    ],
+    "texture": "conifere",
+    "hauteurDefaut": 2
+  },
+  {
+    "id": "lib_haie_cypres",
+    "label": "Cyprès de Leyland",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#236b42",
+    "unit": "m",
+    "h": 2.2,
+    "widthM": 0.7,
+    "shapes": [
+      "line"
+    ],
+    "texture": "conifere",
+    "hauteurDefaut": 2.2
+  },
+  {
+    "id": "lib_arbre_feuillu",
+    "label": "Arbre feuillu",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#2f8a3f",
+    "unit": "pc",
+    "h": 5,
+    "shapes": [
+      "point"
+    ],
+    "texture": "arbre"
+  },
+  {
+    "id": "lib_arbre_conifere",
+    "label": "Conifère",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#1f6b38",
+    "unit": "pc",
+    "h": 6,
+    "shapes": [
+      "point"
+    ],
+    "texture": "conifere"
+  },
+  {
+    "id": "lib_arbre_fruitier",
+    "label": "Arbre fruitier",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#5e9f42",
+    "unit": "pc",
+    "h": 3.5,
+    "shapes": [
+      "point"
+    ],
+    "texture": "arbre"
+  },
+  {
+    "id": "lib_arbre_ornement",
+    "label": "Arbre ornemental",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#8b4fa3",
+    "unit": "pc",
+    "h": 3,
+    "shapes": [
+      "point"
+    ],
+    "texture": "arbre_fleuri"
+  },
+  {
+    "id": "lib_arbuste_persistant",
+    "label": "Arbuste persistant",
+    "category": "Végétation / Arbustes",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 1.2,
+    "shapes": [
+      "point"
+    ],
+    "texture": "arbuste"
+  },
+  {
+    "id": "lib_arbuste_fleuri",
+    "label": "Arbuste fleuri",
+    "category": "Végétation / Arbustes",
+    "mode": "point",
+    "color": "#b24d8d",
+    "unit": "pc",
+    "h": 1.2,
+    "shapes": [
+      "point"
+    ],
+    "texture": "fleurs"
+  },
+  {
+    "id": "lib_massif_vivaces",
+    "label": "Massif de vivaces",
+    "category": "Végétation / Massifs",
+    "mode": "poly",
+    "color": "#8b5a3c",
+    "unit": "m²",
+    "h": 0.15,
+    "shapes": [
+      "free",
+      "ellipse",
+      "circle",
+      "rectangle"
+    ],
+    "texture": "massif"
+  },
+  {
+    "id": "lib_massif_graminees",
+    "label": "Massif graminées",
+    "category": "Végétation / Massifs",
+    "mode": "poly",
+    "color": "#b8a85f",
+    "unit": "m²",
+    "h": 0.6,
+    "shapes": [
+      "free",
+      "ellipse",
+      "circle",
+      "rectangle"
+    ],
+    "texture": "graminees"
+  },
+  {
+    "id": "lib_potager",
+    "label": "Potager",
+    "category": "Végétation / Massifs",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.1,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "terre"
+  }
+]

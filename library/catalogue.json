@@ -1,0 +1,754 @@
+[
+  {
+    "id": "lib_haie_laurier_palme",
+    "label": "Laurier palme",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.7,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_dense",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_laurier_portugal",
+    "label": "Laurier du Portugal",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#245f34",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.55,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_fine",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_hetre",
+    "label": "Hêtre",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#6d8f34",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.55,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_feuillu",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_charme",
+    "label": "Charme",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#4f8b3b",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.55,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_feuillu",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_troene",
+    "label": "Troène",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#3f7e3a",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.5,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_dense",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_photinia",
+    "label": "Photinia",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#7f2f37",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.6,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_rouge",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_if",
+    "label": "If",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#1f5f2e",
+    "unit": "m",
+    "h": 2.0,
+    "widthM": 0.55,
+    "shapes": [
+      "line"
+    ],
+    "texture": "haie_sombre",
+    "hauteurDefaut": 2.0
+  },
+  {
+    "id": "lib_haie_thuya",
+    "label": "Thuya",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#1f6b38",
+    "unit": "m",
+    "h": 2,
+    "widthM": 0.65,
+    "shapes": [
+      "line"
+    ],
+    "texture": "conifere",
+    "hauteurDefaut": 2
+  },
+  {
+    "id": "lib_haie_cypres",
+    "label": "Cyprès de Leyland",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#236b42",
+    "unit": "m",
+    "h": 2.2,
+    "widthM": 0.7,
+    "shapes": [
+      "line"
+    ],
+    "texture": "conifere",
+    "hauteurDefaut": 2.2
+  },
+  {
+    "id": "lib_arbre_feuillu",
+    "label": "Arbre feuillu",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#2f8a3f",
+    "unit": "pc",
+    "h": 5,
+    "shapes": [
+      "point"
+    ],
+    "texture": "arbre"
+  },
+  {
+    "id": "lib_arbre_conifere",
+    "label": "Conifère",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#1f6b38",
+    "unit": "pc",
+    "h": 6,
+    "shapes": [
+      "point"
+    ],
+    "texture": "conifere"
+  },
+  {
+    "id": "lib_arbre_fruitier",
+    "label": "Arbre fruitier",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#5e9f42",
+    "unit": "pc",
+    "h": 3.5,
+    "shapes": [
+      "point"
+    ],
+    "texture": "arbre"
+  },
+  {
+    "id": "lib_arbre_ornement",
+    "label": "Arbre ornemental",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#8b4fa3",
+    "unit": "pc",
+    "h": 3,
+    "shapes": [
+      "point"
+    ],
+    "texture": "arbre_fleuri"
+  },
+  {
+    "id": "lib_arbuste_persistant",
+    "label": "Arbuste persistant",
+    "category": "Végétation / Arbustes",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 1.2,
+    "shapes": [
+      "point"
+    ],
+    "texture": "arbuste"
+  },
+  {
+    "id": "lib_arbuste_fleuri",
+    "label": "Arbuste fleuri",
+    "category": "Végétation / Arbustes",
+    "mode": "point",
+    "color": "#b24d8d",
+    "unit": "pc",
+    "h": 1.2,
+    "shapes": [
+      "point"
+    ],
+    "texture": "fleurs"
+  },
+  {
+    "id": "lib_massif_vivaces",
+    "label": "Massif de vivaces",
+    "category": "Végétation / Massifs",
+    "mode": "poly",
+    "color": "#8b5a3c",
+    "unit": "m²",
+    "h": 0.15,
+    "shapes": [
+      "free",
+      "ellipse",
+      "circle",
+      "rectangle"
+    ],
+    "texture": "massif"
+  },
+  {
+    "id": "lib_massif_graminees",
+    "label": "Massif graminées",
+    "category": "Végétation / Massifs",
+    "mode": "poly",
+    "color": "#b8a85f",
+    "unit": "m²",
+    "h": 0.6,
+    "shapes": [
+      "free",
+      "ellipse",
+      "circle",
+      "rectangle"
+    ],
+    "texture": "graminees"
+  },
+  {
+    "id": "lib_potager",
+    "label": "Potager",
+    "category": "Végétation / Massifs",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.1,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "terre"
+  },
+  {
+    "id": "lib_pelouse",
+    "label": "Pelouse",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#7fcf63",
+    "unit": "m²",
+    "h": 0.03,
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "texture": "pelouse"
+  },
+  {
+    "id": "lib_prairie",
+    "label": "Prairie fleurie",
+    "category": "Revêtements",
+    "mode": "poly",
+    "color": "#9fd36f",
+    "unit": "m²",
+    "h": 0.04,
+    "shapes": [
+      "free",
+      "rectangle",
+      "ellipse"
+    ],
+    "texture": "prairie"
+  },
+  {
+    "id": "lib_gravier_gris",
+    "label": "Gravier gris",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#c7c7c0",
+    "unit": "m²",
+    "h": 0.02,
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "free"
+    ],
+    "texture": "gravier",
+    "hauteurDefaut": 0.02
+  },
+  {
+    "id": "lib_gravier_jaune",
+    "label": "Gravier jaune",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#d8c37a",
+    "unit": "m²",
+    "h": 0.02,
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "free"
+    ],
+    "texture": "gravier",
+    "hauteurDefaut": 0.02
+  },
+  {
+    "id": "lib_dolomie",
+    "label": "Dolomie",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#d6c98d",
+    "unit": "m²",
+    "h": 0.02,
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "free"
+    ],
+    "texture": "dolomie",
+    "hauteurDefaut": 0.02
+  },
+  {
+    "id": "lib_ecorce",
+    "label": "Écorces",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#8b4d2e",
+    "unit": "m²",
+    "h": 0.05,
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "free"
+    ],
+    "texture": "ecorce",
+    "hauteurDefaut": 0.05
+  },
+  {
+    "id": "lib_paves",
+    "label": "Pavés",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#a8a8a8",
+    "unit": "m²",
+    "h": 0.1,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "paves",
+    "hauteurDefaut": 0.1
+  },
+  {
+    "id": "lib_dalles",
+    "label": "Dalles",
+    "category": "Revêtements",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.1,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "dalles",
+    "hauteurDefaut": 0.1
+  },
+  {
+    "id": "lib_terrasse_bois",
+    "label": "Terrasse bois",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#b8834c",
+    "unit": "m²",
+    "h": 0.15,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "bois",
+    "hauteurDefaut": 0.15
+  },
+  {
+    "id": "lib_terrasse_pierre",
+    "label": "Terrasse pierre",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#9c9f9f",
+    "unit": "m²",
+    "h": 0.15,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "pierre",
+    "hauteurDefaut": 0.15
+  },
+  {
+    "id": "lib_terrasse_composite",
+    "label": "Terrasse composite",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#7a5b45",
+    "unit": "m²",
+    "h": 0.15,
+    "shapes": [
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "texture": "bois",
+    "hauteurDefaut": 0.15
+  },
+  {
+    "id": "lib_piscine_rect",
+    "label": "Piscine rectangulaire",
+    "category": "Eau / Piscines",
+    "mode": "rect",
+    "color": "#4fbde8",
+    "unit": "m²",
+    "h": -1.5,
+    "shapes": [
+      "rectangle",
+      "square"
+    ],
+    "texture": "eau",
+    "hauteurDefaut": -1.5
+  },
+  {
+    "id": "lib_piscine_arrondie",
+    "label": "Piscine arrondie",
+    "category": "Eau / Piscines",
+    "mode": "rect",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": -1.5,
+    "shapes": [
+      "rectangle",
+      "ellipse"
+    ],
+    "texture": "eau",
+    "hauteurDefaut": -1.5
+  },
+  {
+    "id": "lib_piscine_ovale",
+    "label": "Piscine ovale",
+    "category": "Eau / Piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": -1.5,
+    "shapes": [
+      "ellipse",
+      "circle"
+    ],
+    "texture": "eau",
+    "hauteurDefaut": -1.5
+  },
+  {
+    "id": "lib_plan_eau",
+    "label": "Plan d’eau",
+    "category": "Eau / Bassins",
+    "mode": "ellipse",
+    "color": "#55aee8",
+    "unit": "m²",
+    "h": -0.6,
+    "shapes": [
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "texture": "eau",
+    "hauteurDefaut": -0.6
+  },
+  {
+    "id": "lib_bassin_naturel",
+    "label": "Bassin naturel",
+    "category": "Eau / Bassins",
+    "mode": "poly",
+    "color": "#4b9bc9",
+    "unit": "m²",
+    "h": -0.6,
+    "shapes": [
+      "free",
+      "ellipse",
+      "circle"
+    ],
+    "texture": "eau_naturelle",
+    "hauteurDefaut": -0.6
+  },
+  {
+    "id": "lib_fontaine",
+    "label": "Fontaine",
+    "category": "Eau / Bassins",
+    "mode": "point",
+    "color": "#5bbce2",
+    "unit": "pc",
+    "h": 0.8,
+    "shapes": [
+      "point"
+    ],
+    "texture": "eau"
+  },
+  {
+    "id": "lib_maison",
+    "label": "Maison existante",
+    "category": "Constructions",
+    "mode": "rect",
+    "color": "#ded8ce",
+    "unit": "m²",
+    "h": 3,
+    "shapes": [
+      "rectangle",
+      "square"
+    ],
+    "texture": "maison"
+  },
+  {
+    "id": "lib_abri",
+    "label": "Abri de jardin",
+    "category": "Constructions",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 2.3,
+    "shapes": [
+      "rectangle",
+      "square"
+    ],
+    "texture": "bois"
+  },
+  {
+    "id": "lib_garage",
+    "label": "Garage",
+    "category": "Constructions",
+    "mode": "rect",
+    "color": "#b8afa5",
+    "unit": "m²",
+    "h": 2.6,
+    "shapes": [
+      "rectangle",
+      "square"
+    ],
+    "texture": "maison"
+  },
+  {
+    "id": "lib_carport",
+    "label": "Carport",
+    "category": "Constructions",
+    "mode": "rect",
+    "color": "#9c8265",
+    "unit": "m²",
+    "h": 2.4,
+    "shapes": [
+      "rectangle"
+    ],
+    "texture": "bois"
+  },
+  {
+    "id": "lib_serre",
+    "label": "Serre",
+    "category": "Constructions",
+    "mode": "rect",
+    "color": "#b8d6c9",
+    "unit": "m²",
+    "h": 2.2,
+    "shapes": [
+      "rectangle"
+    ],
+    "texture": "verre"
+  },
+  {
+    "id": "lib_bbq",
+    "label": "BBQ",
+    "category": "Équipements",
+    "mode": "point",
+    "color": "#333333",
+    "unit": "pc",
+    "h": 1.1,
+    "shapes": [
+      "point"
+    ],
+    "texture": "metal",
+    "hauteurDefaut": 1.1
+  },
+  {
+    "id": "lib_brasero",
+    "label": "Brasero",
+    "category": "Équipements",
+    "mode": "point",
+    "color": "#6d3b24",
+    "unit": "pc",
+    "h": 0.45,
+    "shapes": [
+      "point"
+    ],
+    "texture": "metal"
+  },
+  {
+    "id": "lib_pergola",
+    "label": "Pergola",
+    "category": "Équipements",
+    "mode": "rect",
+    "color": "#8b6b4d",
+    "unit": "m²",
+    "h": 2.4,
+    "shapes": [
+      "rectangle",
+      "square"
+    ],
+    "texture": "bois",
+    "hauteurDefaut": 2.4
+  },
+  {
+    "id": "lib_jacuzzi",
+    "label": "Jacuzzi",
+    "category": "Équipements",
+    "mode": "ellipse",
+    "color": "#6bb9d7",
+    "unit": "pc",
+    "h": -0.9,
+    "shapes": [
+      "circle",
+      "ellipse",
+      "square"
+    ],
+    "texture": "eau",
+    "hauteurDefaut": -0.9
+  },
+  {
+    "id": "lib_salon_jardin",
+    "label": "Salon de jardin",
+    "category": "Équipements",
+    "mode": "point",
+    "color": "#8b6b4d",
+    "unit": "pc",
+    "h": 0.7,
+    "shapes": [
+      "point"
+    ],
+    "texture": "bois"
+  },
+  {
+    "id": "lib_aire_jeux",
+    "label": "Aire de jeux",
+    "category": "Équipements",
+    "mode": "rect",
+    "color": "#d5a245",
+    "unit": "m²",
+    "h": 0.1,
+    "shapes": [
+      "rectangle",
+      "circle",
+      "free"
+    ],
+    "texture": "copeaux"
+  },
+  {
+    "id": "lib_cloture_rigide",
+    "label": "Clôture rigide",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#51605a",
+    "unit": "m",
+    "h": 1.8,
+    "shapes": [
+      "line"
+    ],
+    "texture": "cloture",
+    "hauteurDefaut": 1.8
+  },
+  {
+    "id": "lib_palissade_bois",
+    "label": "Palissade bois",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#7a5638",
+    "unit": "m",
+    "h": 1.8,
+    "shapes": [
+      "line"
+    ],
+    "texture": "bois",
+    "hauteurDefaut": 1.8
+  },
+  {
+    "id": "lib_gabion",
+    "label": "Gabions",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#8d8d86",
+    "unit": "m",
+    "h": 1.2,
+    "shapes": [
+      "line"
+    ],
+    "texture": "pierre"
+  },
+  {
+    "id": "lib_mur_soutenement",
+    "label": "Mur de soutènement",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#77736c",
+    "unit": "m",
+    "h": 1,
+    "shapes": [
+      "line"
+    ],
+    "texture": "pierre"
+  },
+  {
+    "id": "lib_bordure",
+    "label": "Bordure",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6a6a6a",
+    "unit": "m",
+    "h": 0.08,
+    "shapes": [
+      "line"
+    ],
+    "texture": "pierre",
+    "hauteurDefaut": 0.08
+  }
+]

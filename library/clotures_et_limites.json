@@ -1,0 +1,70 @@
+[
+  {
+    "id": "lib_cloture_rigide",
+    "label": "Clôture rigide",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#51605a",
+    "unit": "m",
+    "h": 1.8,
+    "shapes": [
+      "line"
+    ],
+    "texture": "cloture",
+    "hauteurDefaut": 1.8
+  },
+  {
+    "id": "lib_palissade_bois",
+    "label": "Palissade bois",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#7a5638",
+    "unit": "m",
+    "h": 1.8,
+    "shapes": [
+      "line"
+    ],
+    "texture": "bois",
+    "hauteurDefaut": 1.8
+  },
+  {
+    "id": "lib_gabion",
+    "label": "Gabions",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#8d8d86",
+    "unit": "m",
+    "h": 1.2,
+    "shapes": [
+      "line"
+    ],
+    "texture": "pierre"
+  },
+  {
+    "id": "lib_mur_soutenement",
+    "label": "Mur de soutènement",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#77736c",
+    "unit": "m",
+    "h": 1,
+    "shapes": [
+      "line"
+    ],
+    "texture": "pierre"
+  },
+  {
+    "id": "lib_bordure",
+    "label": "Bordure",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6a6a6a",
+    "unit": "m",
+    "h": 0.08,
+    "shapes": [
+      "line"
+    ],
+    "texture": "pierre",
+    "hauteurDefaut": 0.08
+  }
+]
