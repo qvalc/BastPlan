@@ -422,7 +422,7 @@ canvas.addEventListener('mousedown', e=>{
     if(clickedId){
       if(!isSelected(clickedId) && !e.ctrlKey) setSelection(clickedId);
       const mo=objects.find(o=>o.id===clickedId);
-      if(!mo?.locked){ dragging={ids:[...selectedIds], start:p, originals:selectedObjects().map(clone)}; pushHistory(); canvas.style.cursor='move'; }
+      if(!mo?.locked){ dragging={ids:[...selectedIds], start:p, originals:selectedObjects().map(clone)}; pushHistory(); canvas.style.cursor='crosshair'; }
       updateProps(); draw(); return;
     }
     selectingRect={start:p, end:p, add:e.ctrlKey, remove:e.altKey};
@@ -441,7 +441,7 @@ canvas.addEventListener('mousemove', e=>{
   if(activeTool.mode==='select' && selectingRect){ selectingRect.end=p; draw(); drawSelectionRect(); return; }
   if(activeTool.mode==='select'){
     const h = selectedId ? handleHit(p.x,p.y, primarySelected()) : null;
-    canvas.style.cursor = h ? 'nwse-resize' : (hitTest(p.x,p.y) ? 'move' : 'crosshair');
+    canvas.style.cursor = h ? 'nwse-resize' : 'crosshair';
     return;
   }
   if(drawing){ drawing.end=p; draw(); drawPreview(); }
