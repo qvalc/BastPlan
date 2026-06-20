@@ -1071,7 +1071,8 @@ function materialForObject3D(o,t){
   const texName=effectiveTextureName(o,t);
   const baseColor=cssColorToHex(o.color||t.color||'#999999');
 
-  // Pas de texture = couleur simple, volontairement.
+  // En 3D on garde toujours la couleur de base.
+  // Avant : texture = color:0xffffff, ce qui pouvait donner un rendu noir si la texture chargeait mal.
   if(!texName){
     return new THREE.MeshLambertMaterial({color:baseColor, side:THREE.DoubleSide});
   }
@@ -1080,11 +1081,9 @@ function materialForObject3D(o,t){
   const colorPath = pbr?.color || textureAssetPaths[texName] || textureFallbackPaths[texName];
   const colorMap = colorPath ? loadThreeTexture(colorPath, texName==='pelouse'?8:3) : null;
 
-  // Important : on utilise Lambert + texture couleur pour éviter l'effet noir.
-  // Les normal/roughness/ao/displacement seront réactivées plus tard quand le moteur 3D sera plus avancé.
   if(colorMap){
     return new THREE.MeshLambertMaterial({
-      color:0xffffff,
+      color:baseColor,
       map:colorMap,
       side:THREE.DoubleSide
     });
@@ -1099,7 +1098,7 @@ function buildThree3D(){
   const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setSize(w,h); if(THREE.SRGBColorSpace) renderer.outputColorSpace = THREE.SRGBColorSpace; view3d.appendChild(renderer.domElement); threeRenderer=renderer;
   renderer.__scene=scene; renderer.__camera=camera;
   scene.add(new THREE.HemisphereLight(0xffffff,0x63705d,2.4)); const sun=new THREE.DirectionalLight(0xffffff,1.8); sun.position.set(15,25,10); scene.add(sun);
-  const baseMaterial = materialForObject3D({texture:'pelouse', color:'#9fc28c'}, {texture:'pelouse', color:'#9fc28c'});
+  const baseMaterial = new THREE.MeshLambertMaterial({color:0x9fc28c, side:THREE.DoubleSide});
   const base=new THREE.Mesh(new THREE.PlaneGeometry(Math.max(30,(b.maxX-b.minX)/majorGrid+10), Math.max(20,(b.maxY-b.minY)/majorGrid+10)), baseMaterial); base.rotation.x=-Math.PI/2; scene.add(base);
   objects.forEach(o=>add3D(scene,o,b));
   let rot=0; function animate(){rot+=0.002; camera.position.x=Math.sin(rot)*22; camera.position.z=Math.cos(rot)*22; camera.lookAt(0,0,0); requestAnimationFrame(animate); renderer.render(scene,camera)} animate();
@@ -1114,11 +1113,41 @@ function isWaterLike(o){
   const id=String(o.libraryId||'').toLowerCase(), type=String(o.type||'').toLowerCase(), name=String(o.name||'').toLowerCase();
   return type==='eau'||type==='piscine'||id.includes('piscine')||id.includes('plan_eau')||id.includes('bassin')||id.includes('jacuzzi')||name.includes('piscine')||name.includes('eau')||name.includes('bassin')||name.includes('jacuzzi');
 }
+function makeFlatShapeGeometryFromPoints(points,b){
+  const pts=(points||[]).filter(Boolean);
+  if(!window.THREE || pts.length<3) return null;
+  const shape=new THREE.Shape();
+  shape.moveTo(worldX(pts[0].x,b), worldZ(pts[0].y,b));
+  for(let i=1;i<pts.length;i++){
+    shape.lineTo(worldX(pts[i].x,b), worldZ(pts[i].y,b));
+  }
+  shape.closePath();
+  const geo=new THREE.ShapeGeometry(shape);
+  geo.rotateX(-Math.PI/2);
+  return geo;
+}
+
+function makeCurve3D(points,b,y,thickness){
+  const pts=(points||[]).filter(Boolean);
+  if(!window.THREE || pts.length<2) return null;
+  const v=pts.map(p=>new THREE.Vector3(worldX(p.x,b), y, worldZ(p.y,b)));
+  if(v.length===2){
+    const a=pts[0], cpt=pts[1];
+    const len=Math.max(.05, Math.hypot(cpt.x-a.x,cpt.y-a.y)/majorGrid);
+    const geo=new THREE.BoxGeometry(len, Math.max(0.035, thickness*.28), thickness);
+    return {geometry:geo, position:new THREE.Vector3((worldX(a.x,b)+worldX(cpt.x,b))/2,y,(worldZ(a.y,b)+worldZ(cpt.y,b))/2), rotationY:-Math.atan2(cpt.y-a.y,cpt.x-a.x)};
+  }
+  const curve=new THREE.CatmullRomCurve3(v, false, 'catmullrom', 0.35);
+  return {geometry:new THREE.TubeGeometry(curve, Math.max(16, v.length*10), Math.max(0.025, thickness/2), 8, false)};
+}
+
 function add3D(scene,o,b){
   const t=getTool(o.type), mat=materialForObject3D(o,t);
   const hv=heightOf(o,t,0);
-  const h=isWaterLike(o) ? Math.max(0.04, Math.min(0.12, geomHeight(hv,.02))) : geomHeight(hv,.02);
-  const y=isWaterLike(o) ? 0.025 : geomY(hv);
+  const water=isWaterLike(o);
+  const h=water ? Math.max(0.035, Math.min(0.10, geomHeight(hv,.02))) : geomHeight(hv,.02);
+  const y=water ? 0.035 : geomY(hv);
+
   if(o.x1!==undefined){
     const len=Math.max(.05, Math.hypot(o.x2-o.x1,o.y2-o.y1)/majorGrid);
     const thickness = Math.max(.06, Number(o.widthM||t.widthM||0.25));
@@ -1128,36 +1157,48 @@ function add3D(scene,o,b){
     m.rotation.y=-Math.atan2(o.y2-o.y1,o.x2-o.x1);
     scene.add(m); return;
   }
+
   if(o.r){
     let geo=o.type==='arbre'||String(o.libraryId).includes('arbre') ? new THREE.ConeGeometry(Math.max(.35,o.r/majorGrid),h,18) : new THREE.CylinderGeometry(Math.max(.25,o.r/majorGrid*.7),Math.max(.3,o.r/majorGrid),h,24);
     if(o.type==='bbq'||String(o.libraryId).includes('bbq')) geo=new THREE.BoxGeometry(Math.max(.4,o.r/majorGrid*1.4),h,Math.max(.4,o.r/majorGrid*1.4));
     const m=new THREE.Mesh(geo,mat); m.position.set(worldX(o.x,b),y,worldZ(o.y,b)); scene.add(m); return;
   }
+
   if(o.points){
     if(o.shape==='curve'||o.open){
       const thickness=Math.max(.06, Number(o.widthM||t.widthM||0.25));
-      for(let i=1;i<o.points.length;i++){
-        const a=o.points[i-1], cpt=o.points[i];
-        const len=Math.max(.05, Math.hypot(cpt.x-a.x,cpt.y-a.y)/majorGrid);
-        const geo=new THREE.BoxGeometry(len,h,thickness);
-        const m=new THREE.Mesh(geo,mat);
-        m.position.set((worldX(a.x,b)+worldX(cpt.x,b))/2,y,(worldZ(a.y,b)+worldZ(cpt.y,b))/2);
-        m.rotation.y=-Math.atan2(cpt.y-a.y,cpt.x-a.x);
+      const made=makeCurve3D(o.points,b,y,thickness);
+      if(made){
+        const m=new THREE.Mesh(made.geometry,mat);
+        if(made.position) m.position.copy(made.position);
+        if(made.rotationY!==undefined) m.rotation.y=made.rotationY;
         scene.add(m);
       }
       return;
     }
+
+    // Forme libre fermée : vraie surface 3D, pas gros carré noir.
+    const geo=makeFlatShapeGeometryFromPoints(o.points,b);
+    if(geo){
+      const m=new THREE.Mesh(geo,mat);
+      m.position.y = water ? 0.035 : Math.max(0.025, h/2);
+      scene.add(m);
+      return;
+    }
+
     const c=centroid(o.points), area=measure(o), side=Math.sqrt(Math.max(.2,area));
-    const geo=new THREE.BoxGeometry(side, h, side);
-    const m=new THREE.Mesh(geo,mat); m.position.set(worldX(c.x,b),y,worldZ(c.y,b)); scene.add(m); return;
+    const geoFallback=new THREE.BoxGeometry(side, h, side);
+    const m=new THREE.Mesh(geoFallback,mat); m.position.set(worldX(c.x,b),y,worldZ(c.y,b)); scene.add(m); return;
   }
-  if(o.shape==='ellipse'||o.shape==='circle'||isWaterLike(o)){
+
+  if(o.shape==='ellipse'||o.shape==='circle'||water){
     const geo=new THREE.CylinderGeometry(.5,.5,h,64);
     const m=new THREE.Mesh(geo,mat);
     m.scale.set(Math.max(.1,o.w/majorGrid),1,Math.max(.1,o.h/majorGrid));
     m.position.set(worldX(o.x+o.w/2,b),y,worldZ(o.y+o.h/2,b));
     scene.add(m); return;
   }
+
   const geo=new THREE.BoxGeometry(Math.max(.1,o.w/majorGrid),h,Math.max(.1,o.h/majorGrid));
   const m=new THREE.Mesh(geo,mat); m.position.set(worldX(o.x+o.w/2,b),y,worldZ(o.y+o.h/2,b)); scene.add(m);
 }
