@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BastPlan Paysage - Prototype avancé v21 texture optionnelle</title>
+  <title>BastPlan Paysage - Prototype avancé v22 courbes et couleurs</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><strong>BastPlan Paysage</strong><span>v21-texture-optionnelle</span></div>
+    <div class="brand"><strong>BastPlan Paysage</strong><span>v22-courbes-couleurs</span></div>
     <div class="top-actions">
       <button id="btnClear">Nouveau</button>
       <label class="file-btn">Ouvrir<input type="file" id="fileLoad" accept="application/json" /></label>
@@ -42,6 +42,7 @@
           <select id="shapeSelect">
             <option value="auto">Automatique</option>
             <option value="line">Ligne</option>
+            <option value="curve">Courbe</option>
             <option value="rectangle">Rectangle</option>
             <option value="square">Carré</option>
             <option value="ellipse">Ovale</option>
@@ -151,7 +152,7 @@
     </div>
   </div>
 
-  <footer>Unité : mètre (m) · Zoom navigateur possible · Maintenir MAJ pour angles libres selon besoin · Clic droit pour le menu · Ctrl+glisser ajoute · Alt+glisser retire · Double-clic édite</footer>
+  <footer>Unité : mètre (m) · Zoom navigateur possible · Maintenir MAJ pour angles libres selon besoin · Clic droit pour le menu · Ctrl+glisser ajoute · Alt+glisser retire · Double-clic édite / termine une forme libre ou une courbe</footer>
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="app.js"></script>
 </body>

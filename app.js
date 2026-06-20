@@ -1,4 +1,4 @@
-const RED_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='0' x2='16' y2='13' stroke='red' stroke-width='0.8'/%3E%3Cline x1='16' y1='19' x2='16' y2='32' stroke='red' stroke-width='0.8'/%3E%3Cline x1='0' y1='16' x2='13' y2='16' stroke='red' stroke-width='0.8'/%3E%3Cline x1='19' y1='16' x2='32' y2='16' stroke='red' stroke-width='0.8'/%3E%3C/svg%3E") 16 16, crosshair`;
+const DEFAULT_CURSOR = 'default';
 const canvas = document.getElementById('plan');
 const ctx = canvas.getContext('2d');
 const summaryEl = document.getElementById('summary');
@@ -40,6 +40,7 @@ const toolDefs = [
   {id:'haie', label:'Haie', mode:'line', color:'#2f7d32', unit:'m', h:2.0, texture:'haie_dense', widthM:.65},
   {id:'cloture', label:'Clôture', mode:'line', color:'#6f5138', unit:'m', h:1.5, texture:'cloture'},
   {id:'bordure', label:'Bordure', mode:'line', color:'#6a6a6a', unit:'m', h:0.08, texture:'pierre'},
+  {id:'courbe', label:'Courbe / tracé souple', mode:'curve', color:'#2f7d32', unit:'m', h:0.25, texture:''},
   {id:'arbre', label:'Arbre', mode:'point', color:'#217a35', unit:'pc', h:4, texture:'arbre'},
   {id:'arbuste', label:'Arbuste', mode:'point', color:'#4e9f43', unit:'pc', h:1.2, texture:'arbuste'},
   {id:'bbq', label:'BBQ', mode:'point', color:'#333333', unit:'pc', h:1.1, texture:'metal'},
@@ -110,12 +111,13 @@ const libraryItems = [
   {id:'lib_bordure', label:'Bordure', category:'Clôtures et limites', mode:'line', color:'#6a6a6a', unit:'m', h:.25, shapes:['line','rectangle','square','free'], texture:'pierre'}
 ];
 
-const shapeLabels={auto:'Automatique', line:'Ligne', rectangle:'Rectangle', square:'Carré', ellipse:'Ovale', circle:'Rond', free:'Forme libre', point:'Point / symbole'};
+const shapeLabels={auto:'Automatique', line:'Ligne', curve:'Courbe', rectangle:'Rectangle', square:'Carré', ellipse:'Ovale', circle:'Rond', free:'Forme libre', point:'Point / symbole'};
 let preferredShape='auto';
 let openLibraryCats=new Set();
 function modeForShape(item, shape){
   if(!shape || shape==='auto') return item.mode;
   if(shape==='line') return 'line';
+  if(shape==='curve') return 'curve';
   if(shape==='free') return 'poly';
   if(shape==='circle' || shape==='ellipse') return 'ellipse';
   if(shape==='square' || shape==='rectangle') return 'rect';
@@ -137,7 +139,7 @@ function libraryShapeFor(item){
 function updateShapeSelect(){
   const sel=document.getElementById('shapeSelect');
   if(!sel) return;
-  const all=['auto','line','rectangle','square','ellipse','circle','free','point'];
+  const all=['auto','line','curve','rectangle','square','ellipse','circle','free','point'];
   const current=preferredShape || sel.value || 'auto';
   const shapes=activeTool?.source==='library' ? (activeTool.shapes || []) : all.filter(x=>x!=='auto');
   sel.innerHTML=all.map(v=>`<option value="${v}" ${v!=='auto' && activeTool?.source==='library' && !allowedShape(activeTool,v)?'disabled':''}>${shapeLabels[v]||v}</option>`).join('');
@@ -422,7 +424,7 @@ canvas.addEventListener('mousedown', e=>{
     if(clickedId){
       if(!isSelected(clickedId) && !e.ctrlKey) setSelection(clickedId);
       const mo=objects.find(o=>o.id===clickedId);
-      if(!mo?.locked){ dragging={ids:[...selectedIds], start:p, originals:selectedObjects().map(clone)}; pushHistory(); canvas.style.cursor = RED_CURSOR; }
+      if(!mo?.locked){ dragging={ids:[...selectedIds], start:p, originals:selectedObjects().map(clone)}; pushHistory(); canvas.style.cursor = DEFAULT_CURSOR; }
       updateProps(); draw(); return;
     }
     selectingRect={start:p, end:p, add:e.ctrlKey, remove:e.altKey};
@@ -430,7 +432,7 @@ canvas.addEventListener('mousedown', e=>{
     updateProps(); draw(); return;
   }
   if(activeTool.mode==='point') { addObject({type:activeTool.id, shape:'point', x:p.x, y:p.y, r:majorGrid*.55}); return; }
-  if(activeTool.mode==='poly') { polyDraft.push(p); draw(); return; }
+  if(activeTool.mode==='poly' || activeTool.mode==='curve') { polyDraft.push(p); draw(); return; }
   const start = activeTool.mode==='line' ? lineSnapPoint(p, activeTool.id) : p;
   drawing={start, end:start};
 });
@@ -441,15 +443,15 @@ canvas.addEventListener('mousemove', e=>{
   if(activeTool.mode==='select' && selectingRect){ selectingRect.end=p; draw(); drawSelectionRect(); return; }
   if(activeTool.mode==='select'){
     const h = selectedId ? handleHit(p.x,p.y, primarySelected()) : null;
-    canvas.style.cursor = h ? 'nwse-resize' : RED_CURSOR;
+    canvas.style.cursor = h ? 'nwse-resize' : DEFAULT_CURSOR;
     return;
   }
   if(drawing){ drawing.end=p; draw(); drawPreview(); }
 });
 canvas.addEventListener('mouseup', e=>{
   if(resizing){ resizing=null; saveLocal(); return; }
-  if(dragging){ dragging=null; canvas.style.cursor = RED_CURSOR; saveLocal(); return; }
-  if(selectingRect){ finishSelectionRect(); selectingRect=null; canvas.style.cursor = RED_CURSOR; updateProps(); draw(); return; }
+  if(dragging){ dragging=null; canvas.style.cursor = DEFAULT_CURSOR; saveLocal(); return; }
+  if(selectingRect){ finishSelectionRect(); selectingRect=null; canvas.style.cursor = DEFAULT_CURSOR; updateProps(); draw(); return; }
   if(!drawing) return;
   drawing.end=pos(e);
   const s=drawing.start, en=drawing.end;
@@ -470,6 +472,7 @@ canvas.addEventListener('dblclick', e=>{
     return;
   }
   if(activeTool.mode==='poly' && polyDraft.length>=3){ addObject({type:activeTool.id, shape:activeTool.shape||'free', points:[...polyDraft]}); polyDraft=[]; draw(); }
+  if(activeTool.mode==='curve' && polyDraft.length>=2){ addObject({type:activeTool.id, shape:'curve', open:true, points:[...polyDraft]}); polyDraft=[]; draw(); }
 });
 canvas.addEventListener('contextmenu', e=>{
   e.preventDefault();
@@ -556,7 +559,7 @@ function hitTest(x,y){
     const o=objects[i];
     if(o.r && Math.hypot(x-o.x,y-o.y)<=o.r+8) return o.id;
     if(o.x1!==undefined && distLine(x,y,o.x1,o.y1,o.x2,o.y2)<10) return o.id;
-    if(o.points && pointInPoly({x,y}, o.points)) return o.id;
+    if(o.points && ((o.shape==='curve'||o.open) ? curveHit(x,y,o.points,12) : pointInPoly({x,y}, o.points))) return o.id;
     if(o.x!==undefined && o.w!==undefined && x>=o.x && x<=o.x+o.w && y>=o.y && y<=o.y+o.h) return o.id;
   }
   return null;
@@ -649,7 +652,7 @@ function finishSelectionRect(){
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height); drawGrid(); objects.forEach(drawObj);
-  if(polyDraft.length){ctx.strokeStyle='#111';ctx.setLineDash([6,4]);ctx.beginPath();polyDraft.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();ctx.setLineDash([]);polyDraft.forEach(p=>dot(p.x,p.y)); if(showDims) drawPolyDims(polyDraft);}
+  if(polyDraft.length){ctx.strokeStyle='#111';ctx.setLineDash([6,4]); if(activeTool?.mode==='curve') drawSmoothOpenPath(polyDraft, false); else {ctx.beginPath();polyDraft.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();} ctx.setLineDash([]);polyDraft.forEach(p=>dot(p.x,p.y)); if(showDims) activeTool?.mode==='curve' ? drawCurveDims(polyDraft) : drawPolyDims(polyDraft); }
   selectedObjects().forEach((so,i)=>{ if(i===0) drawHandles(so); else drawSelectionBox(so); });
   if(selectingRect) drawSelectionRect();
   updateSummary();
@@ -682,9 +685,43 @@ function patternFill(o, fallback){
 function drawRoundRect(x,y,w,h,r){
   r=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
 }
+
+function drawSmoothOpenPath(pts, doStroke=true){
+  if(!pts || pts.length<2) return;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  if(pts.length===2){ ctx.lineTo(pts[1].x, pts[1].y); }
+  else {
+    for(let i=1;i<pts.length-1;i++){
+      const xc=(pts[i].x+pts[i+1].x)/2;
+      const yc=(pts[i].y+pts[i+1].y)/2;
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
+    }
+    const last=pts[pts.length-1];
+    const prev=pts[pts.length-2];
+    ctx.quadraticCurveTo(prev.x, prev.y, last.x, last.y);
+  }
+  if(doStroke) ctx.stroke(); else ctx.stroke();
+}
+function curveLengthPx(pts){
+  if(!pts || pts.length<2) return 0;
+  let len=0;
+  for(let i=1;i<pts.length;i++) len+=Math.hypot(pts[i].x-pts[i-1].x, pts[i].y-pts[i-1].y);
+  return len;
+}
+function curveHit(x,y,pts,tol=10){
+  if(!pts || pts.length<2) return false;
+  for(let i=1;i<pts.length;i++) if(distLine(x,y,pts[i-1].x,pts[i-1].y,pts[i].x,pts[i].y)<tol) return true;
+  return false;
+}
+function drawCurveDims(pts){
+  if(!pts || pts.length<2) return;
+  const mid=pts[Math.floor(pts.length/2)];
+  dimText(`${meters(curveLengthPx(pts)/majorGrid)} m`, mid.x, mid.y-18, 0);
+}
 function drawObj(o){
   const t=getTool(o.type); const fill=o.color||t.color; ctx.lineWidth=isSelected(o.id)?1.0:0.35; ctx.strokeStyle=isSelected(o.id)?'#ff7b00':'#263328'; ctx.fillStyle=patternFill(o, fill);
-  if(o.points){ctx.beginPath();o.points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fill();ctx.stroke();label(o, centroid(o.points).x, centroid(o.points).y); if(showDims) drawPolyDims(o.points); return;}
+  if(o.points){ if(o.shape==='curve' || o.open){ ctx.strokeStyle=isSelected(o.id)?'#ff7b00':fill; ctx.lineWidth=(Number(o.widthM||t.widthM||0.25)*majorGrid)||2; ctx.lineCap='round'; ctx.lineJoin='round'; drawSmoothOpenPath(o.points); ctx.lineWidth=0.35; label(o, centroid(o.points).x, centroid(o.points).y-8); if(showDims) drawCurveDims(o.points); return; } ctx.beginPath();o.points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fill();ctx.stroke();label(o, centroid(o.points).x, centroid(o.points).y); if(showDims) drawPolyDims(o.points); return;}
   if(o.x1!==undefined){ctx.strokeStyle=isSelected(o.id)?'#ff7b00':fill;ctx.lineWidth=(String(o.type).includes('haie')||String(o.libraryId).includes('haie'))?1.2:(o.type==='cote'?0.75:0.85);ctx.beginPath();ctx.moveTo(o.x1,o.y1);ctx.lineTo(o.x2,o.y2);ctx.stroke();if(o.type==='cote'){ drawLineDim({x:o.x1,y:o.y1},{x:o.x2,y:o.y2}); return; } label(o,(o.x1+o.x2)/2,(o.y1+o.y2)/2-8); if(showDims) drawLineDim({x:o.x1,y:o.y1},{x:o.x2,y:o.y2}); return;}
   if(o.r){ if(o.type==='texte'){ctx.fillStyle=fill;ctx.font='bold 18px Arial';ctx.textAlign='center';ctx.fillText(o.name||'Texte',o.x,o.y); return;} ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.fill();ctx.stroke();label(o,o.x,o.y-o.r-8); if(showDims) drawCircleDim(o); return;}
   if(o.shape==='ellipse'||o.shape==='circle'||(!o.shape && (o.type==='eau'||o.type==='piscine'))){ctx.beginPath();ctx.ellipse(o.x+o.w/2,o.y+o.h/2,o.w/2,o.h/2,0,0,Math.PI*2);ctx.fill();ctx.stroke();label(o,o.x+o.w/2,o.y+o.h/2); if(showDims) drawEllipseDims(o); return;}
@@ -774,7 +811,7 @@ function drawPolyDims(pts){
 function measure(o){
   if(o.x1!==undefined) return meters(Math.hypot(o.x2-o.x1,o.y2-o.y1)/majorGrid);
   if(o.r) return 1;
-  if(o.points){let area=0; const pts=o.points; for(let i=0,j=pts.length-1;i<pts.length;j=i++) area+=(pts[j].x+pts[i].x)*(pts[j].y-pts[i].y); return meters(Math.abs(area/2)/(majorGrid*majorGrid));}
+  if(o.points){ if(o.shape==='curve'||o.open) return meters(curveLengthPx(o.points)/majorGrid); let area=0; const pts=o.points; for(let i=0,j=pts.length-1;i<pts.length;j=i++) area+=(pts[j].x+pts[i].x)*(pts[j].y-pts[i].y); return meters(Math.abs(area/2)/(majorGrid*majorGrid));}
   if(o.type==='eau') return meters(Math.PI*(o.w/2)*(o.h/2)/(majorGrid*majorGrid));
   return meters((o.w*o.h)/(majorGrid*majorGrid));
 }
@@ -892,6 +929,19 @@ if(propTextureLive){
   });
 }
 
+const propColorLive=document.getElementById('propColor');
+if(propColorLive){
+  propColorLive.addEventListener('input',()=>{
+    const arr=selectedObjects();
+    if(!arr.length) return;
+    const color=propColorLive.value;
+    arr.forEach(o=>{ if(!o.locked) o.color=color; });
+    draw();
+    if(currentView!=='2d') build3D();
+  });
+  propColorLive.addEventListener('change',()=>saveLocal());
+}
+
 document.getElementById('btnApplyProps').onclick=()=>{
   const arr=selectedObjects(); if(!arr.length) return;
   pushHistory();
@@ -914,7 +964,7 @@ function redo(){ if(!redoStack.length) return; historyStack.push(stateSnapshot()
 document.getElementById('showDims').onchange=e=>{showDims=e.target.checked; draw();};
 document.getElementById('scaleSelect').onchange=e=>{const [maj,snapv]=e.target.value.split('|').map(Number); majorGrid=maj; snapGrid=snapv; draw(); saveLocal();};
 document.getElementById('btnClear').onclick=()=>{if(confirm('Créer un nouveau plan ?')){pushHistory(); objects=[];clearSelection();draw();saveLocal();}};
-document.getElementById('btnSave').onclick=()=>download('bastplan-paysage.json', JSON.stringify({version:13, majorGrid, snapGrid, objects}, null, 2));
+document.getElementById('btnSave').onclick=()=>download('bastplan-paysage.json', JSON.stringify({version:14, majorGrid, snapGrid, objects}, null, 2));
 document.getElementById('fileLoad').onchange=e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{const data=JSON.parse(r.result); objects=data.objects||[]; majorGrid=data.majorGrid||data.grid||25; snapGrid=data.snapGrid||majorGrid; clearSelection(); setScaleSelect(); draw(); saveLocal();}; r.readAsText(f);};
 document.getElementById('btnExport').onclick=exportPNG;
 function exportPNG(){
@@ -1048,8 +1098,8 @@ function isWaterLike(o){
 function add3D(scene,o,b){
   const t=getTool(o.type), mat=materialForObject3D(o,t);
   const hv=heightOf(o,t,0);
-  const h=geomHeight(hv,.02);
-  const y=geomY(hv);
+  const h=isWaterLike(o) ? Math.max(0.04, Math.min(0.12, geomHeight(hv,.02))) : geomHeight(hv,.02);
+  const y=isWaterLike(o) ? 0.025 : geomY(hv);
   if(o.x1!==undefined){
     const len=Math.max(.05, Math.hypot(o.x2-o.x1,o.y2-o.y1)/majorGrid);
     const thickness = Math.max(.06, Number(o.widthM||t.widthM||0.25));
@@ -1065,6 +1115,19 @@ function add3D(scene,o,b){
     const m=new THREE.Mesh(geo,mat); m.position.set(worldX(o.x,b),y,worldZ(o.y,b)); scene.add(m); return;
   }
   if(o.points){
+    if(o.shape==='curve'||o.open){
+      const thickness=Math.max(.06, Number(o.widthM||t.widthM||0.25));
+      for(let i=1;i<o.points.length;i++){
+        const a=o.points[i-1], cpt=o.points[i];
+        const len=Math.max(.05, Math.hypot(cpt.x-a.x,cpt.y-a.y)/majorGrid);
+        const geo=new THREE.BoxGeometry(len,h,thickness);
+        const m=new THREE.Mesh(geo,mat);
+        m.position.set((worldX(a.x,b)+worldX(cpt.x,b))/2,y,(worldZ(a.y,b)+worldZ(cpt.y,b))/2);
+        m.rotation.y=-Math.atan2(cpt.y-a.y,cpt.x-a.x);
+        scene.add(m);
+      }
+      return;
+    }
     const c=centroid(o.points), area=measure(o), side=Math.sqrt(Math.max(.2,area));
     const geo=new THREE.BoxGeometry(side, h, side);
     const m=new THREE.Mesh(geo,mat); m.position.set(worldX(c.x,b),y,worldZ(c.y,b)); scene.add(m); return;
