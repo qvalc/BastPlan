@@ -515,7 +515,11 @@ canvas.addEventListener('dblclick', e=>{
     return;
   }
   if(activeTool.mode==='poly' && polyDraft.length>=3){ addObject({type:activeTool.id, shape:activeTool.shape||'free', points:[...polyDraft]}); polyDraft=[]; draw(); }
-  if(activeTool.mode==='curve' && polyDraft.length>=2){ addObject({type:activeTool.id, shape:'curve', open:true, points:[...polyDraft]}); polyDraft=[]; draw(); }
+  if(activeTool.mode==='curve' && polyDraft.length>=2){
+    const asSurface = String(activeTool.unit || '').includes('m²') || String(activeTool.unit || '').includes('m2');
+    addObject({type:activeTool.id, shape:'curve', open:!asSurface, points:[...polyDraft]});
+    polyDraft=[]; draw();
+  }
 });
 canvas.addEventListener('contextmenu', e=>{
   e.preventDefault();
@@ -609,7 +613,7 @@ function hitTest(x,y){
     const o=objects[i];
     if(o.r && Math.hypot(x-o.x,y-o.y)<=o.r+8) return o.id;
     if(o.x1!==undefined && distLine(x,y,o.x1,o.y1,o.x2,o.y2)<10) return o.id;
-    if(o.points && ((o.shape==='curve'||o.open) ? curveHit(x,y,o.points,12) : pointInPoly({x,y}, o.points))) return o.id;
+    if(o.points && ((o.shape==='curve'||o.open) && !isSurfaceObject(o) ? curveHit(x,y,o.points,12) : pointInPoly({x,y}, o.points))) return o.id;
     if(o.x!==undefined && o.w!==undefined && x>=o.x && x<=o.x+o.w && y>=o.y && y<=o.y+o.h) return o.id;
   }
   return null;
@@ -640,6 +644,24 @@ function drawSelectionBox(o){
 }
 function distLine(px,py,x1,y1,x2,y2){const A=px-x1,B=py-y1,C=x2-x1,D=y2-y1;const dot=A*C+B*D,len=C*C+D*D||1;let t=Math.max(0,Math.min(1,dot/len));return Math.hypot(px-(x1+t*C),py-(y1+t*D));}
 function pointInPoly(p, pts){let c=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){if(((pts[i].y>p.y)!=(pts[j].y>p.y))&&(p.x<(pts[j].x-pts[i].x)*(p.y-pts[i].y)/(pts[j].y-pts[i].y)+pts[i].x))c=!c;}return c;}
+
+function isSurfaceObject(o, t=getTool(o?.type)){
+  if(!o || !o.points) return false;
+  const unit = String(t?.unit || '').toLowerCase();
+  const type = String(o.type || '').toLowerCase();
+  const lib = String(o.libraryId || '').toLowerCase();
+  const shape = String(o.shape || '').toLowerCase();
+
+  // Une courbe dessinée avec un outil de surface (pelouse, gravier, plan d'eau, massif, etc.)
+  // doit devenir une surface fermée texturable, même si une ancienne version a enregistré open:true.
+  if(shape === 'curve' && (unit.includes('m²') || unit.includes('m2'))) return true;
+
+  // Sécurité pour les anciens fichiers : ces objets sont des surfaces par nature.
+  if(['terrain','pelouse','terrasse','allee','gravier','massif','eau','piscine'].includes(type)) return true;
+  if(['terrain','pelouse','terrasse','allee','gravier','massif','plan_eau','piscine','bassin'].some(k => lib.includes(k))) return true;
+
+  return false;
+}
 
 
 function objectBounds(o){
@@ -786,7 +808,7 @@ function drawCurveDims(pts){
 function drawObj(o){
   const t=getTool(o.type); const fill=o.color||t.color; ctx.lineWidth=isSelected(o.id)?1.0:0.35; ctx.strokeStyle=isSelected(o.id)?'#ff7b00':'#263328'; ctx.fillStyle=patternFill(o, fill);
   if(o.points){
-    if(o.shape==='curve' || o.open){
+    if((o.shape==='curve' || o.open) && !isSurfaceObject(o,t)){
       ctx.strokeStyle=isSelected(o.id)?'#ff7b00':patternFill(o, fill);
       ctx.lineWidth=(Number(o.widthM||t.widthM||0.25)*majorGrid)||2;
       ctx.lineCap='round';
@@ -893,7 +915,7 @@ function drawPolyDims(pts){
 function measure(o){
   if(o.x1!==undefined) return meters(Math.hypot(o.x2-o.x1,o.y2-o.y1)/majorGrid);
   if(o.r) return 1;
-  if(o.points){ if(o.shape==='curve'||o.open) return meters(curveLengthPx(o.points)/majorGrid); let area=0; const pts=o.points; for(let i=0,j=pts.length-1;i<pts.length;j=i++) area+=(pts[j].x+pts[i].x)*(pts[j].y-pts[i].y); return meters(Math.abs(area/2)/(majorGrid*majorGrid));}
+  if(o.points){ const t=getTool(o.type); if((o.shape==='curve'||o.open) && !isSurfaceObject(o,t)) return meters(curveLengthPx(o.points)/majorGrid); let area=0; const pts=o.points; for(let i=0,j=pts.length-1;i<pts.length;j=i++) area+=(pts[j].x+pts[i].x)*(pts[j].y-pts[i].y); return meters(Math.abs(area/2)/(majorGrid*majorGrid));}
   if(o.type==='eau') return meters(Math.PI*(o.w/2)*(o.h/2)/(majorGrid*majorGrid));
   return meters((o.w*o.h)/(majorGrid*majorGrid));
 }
@@ -1296,7 +1318,7 @@ function add3D(scene,o,b){
   }
 
   if(o.points){
-    if(o.shape==='curve'||o.open){
+    if((o.shape==='curve'||o.open) && !isSurfaceObject(o,t)){
       const thickness=Math.max(.06, Number(o.widthM||t.widthM||0.25));
       const made=makeCurve3D(o.points,b,y,thickness);
       if(made){
