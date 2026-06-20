@@ -26,6 +26,7 @@ let threeRenderer = null;
 let historyStack = [];
 let redoStack = [];
 let currentView = '2d';
+let planZoom = 1; // zoom visuel interne du canvas : 1 = 100 %
 
 const toolDefs = [
   {id:'select', label:'Sélection / déplacement', mode:'select'},
@@ -371,8 +372,17 @@ function snap(v){return snapEnabled ? Math.round(v/snapGrid)*snapGrid : v}
 function toM(px){return px/majorGrid}
 function meters(n){return Math.round(n*100)/100}
 function getTool(id){return toolDefs.find(t=>t.id===id) || libraryItems.find(t=>t.id===id) || toolDefs[0]}
-function pos(evt){ const r=canvas.getBoundingClientRect(); return {x:snap(evt.clientX-r.left), y:snap(evt.clientY-r.top)}; }
-function rawPos(evt){ const r=canvas.getBoundingClientRect(); return {x:evt.clientX-r.left, y:evt.clientY-r.top}; }
+function canvasPointer(evt){
+  const r = canvas.getBoundingClientRect();
+  const scaleX = r.width ? canvas.width / r.width : 1;
+  const scaleY = r.height ? canvas.height / r.height : 1;
+  return {
+    x: (evt.clientX - r.left) * scaleX,
+    y: (evt.clientY - r.top) * scaleY
+  };
+}
+function pos(evt){ const p=canvasPointer(evt); return {x:snap(p.x), y:snap(p.y)}; }
+function rawPos(evt){ return canvasPointer(evt); }
 function lineSnapPoint(p, type){
   // Pour les haies/clôtures/bordures : si on clique très près d'une extrémité existante,
   // le nouveau tronçon s'y accroche automatiquement. Si on clique plus loin, il démarre séparément.
@@ -388,9 +398,9 @@ function lineSnapPoint(p, type){
   return best ? {x:best.x, y:best.y} : p;
 }
 function clone(o){return JSON.parse(JSON.stringify(o))}
-function stateSnapshot(){ return JSON.stringify({majorGrid,snapGrid,objects}); }
+function stateSnapshot(){ return JSON.stringify({majorGrid,snapGrid,objects,planZoom}); }
 function pushHistory(){ historyStack.push(stateSnapshot()); if(historyStack.length>80) historyStack.shift(); redoStack=[]; }
-function restoreSnapshot(str){ try{ const d=JSON.parse(str); majorGrid=d.majorGrid||25; snapGrid=d.snapGrid||25; objects=d.objects||[]; clearSelection(); setScaleSelect(); updateProps(); draw(); saveLocal(); }catch(e){console.warn(e)} }
+function restoreSnapshot(str){ try{ const d=JSON.parse(str); majorGrid=d.majorGrid||25; snapGrid=d.snapGrid||25; planZoom=clampZoom(Number(d.planZoom)||planZoom||1); objects=d.objects||[]; clearSelection(); setScaleSelect(); updateZoomControls(); applyPlanZoom(); updateProps(); draw(); saveLocal(); }catch(e){console.warn(e)} }
 function setSelection(ids){ selectedIds=[...new Set((Array.isArray(ids)?ids:[ids]).filter(Boolean))]; selectedId=selectedIds[0]||null; }
 function clearSelection(){ selectedIds=[]; selectedId=null; }
 function isSelected(id){ return selectedIds.includes(id); }
@@ -1046,6 +1056,90 @@ if(propColorLive){
   propColorLive.addEventListener('change',()=>saveLocal());
 }
 
+
+function clampZoom(v){ return Math.min(5, Math.max(0.25, Number(v)||1)); }
+function zoomPercent(){ return Math.round(planZoom * 100); }
+function updateZoomControls(){
+  const slider=document.getElementById('planZoomSlider');
+  const percent=document.getElementById('planZoomPercent');
+  const val=zoomPercent();
+  if(slider) slider.value=String(val);
+  if(percent) percent.value=String(val);
+}
+function applyPlanZoom(){
+  canvas.style.width = Math.round(canvas.width * planZoom) + 'px';
+  canvas.style.height = Math.round(canvas.height * planZoom) + 'px';
+  updateZoomControls();
+}
+function setPlanZoomPercent(percent, opts={}){
+  const workspace=document.querySelector('.workspace');
+  const before = workspace ? {
+    x: workspace.scrollLeft + workspace.clientWidth / 2,
+    y: workspace.scrollTop + workspace.clientHeight / 2,
+    offsetX: canvas.offsetLeft,
+    offsetY: canvas.offsetTop,
+    zoom: planZoom
+  } : null;
+  if(before){
+    before.canvasX = Math.max(0, (before.x - before.offsetX) / before.zoom);
+    before.canvasY = Math.max(0, (before.y - before.offsetY) / before.zoom);
+  }
+  planZoom = clampZoom(Number(percent) / 100);
+  applyPlanZoom();
+  if(workspace && before && opts.keepCenter !== false){
+    requestAnimationFrame(()=>{
+      workspace.scrollLeft = canvas.offsetLeft + before.canvasX * planZoom - workspace.clientWidth / 2;
+      workspace.scrollTop = canvas.offsetTop + before.canvasY * planZoom - workspace.clientHeight / 2;
+    });
+  }
+  saveLocal();
+}
+function zoomStep(delta){ setPlanZoomPercent(zoomPercent() + delta); }
+function fitPlanToContent(){
+  const workspace=document.querySelector('.workspace');
+  if(!workspace) return;
+  const b=bounds();
+  const pad=80;
+  const bw=Math.max(majorGrid, b.maxX-b.minX);
+  const bh=Math.max(majorGrid, b.maxY-b.minY);
+  const availableW=Math.max(200, workspace.clientWidth - pad);
+  const availableH=Math.max(160, workspace.clientHeight - pad - 55);
+  const target=clampZoom(Math.min(availableW/bw, availableH/bh));
+  planZoom=target;
+  applyPlanZoom();
+  requestAnimationFrame(()=>{
+    const cx=(b.minX+b.maxX)/2;
+    const cy=(b.minY+b.maxY)/2;
+    workspace.scrollLeft = canvas.offsetLeft + cx * planZoom - workspace.clientWidth / 2;
+    workspace.scrollTop = canvas.offsetTop + cy * planZoom - workspace.clientHeight / 2;
+  });
+  saveLocal();
+}
+function initZoomControls(){
+  const slider=document.getElementById('planZoomSlider');
+  const percent=document.getElementById('planZoomPercent');
+  const out=document.getElementById('btnZoomOut');
+  const inn=document.getElementById('btnZoomIn');
+  const reset=document.getElementById('btnZoomReset');
+  const fit=document.getElementById('btnZoomFit');
+  if(slider) slider.addEventListener('input', e=>setPlanZoomPercent(e.target.value));
+  if(percent){
+    percent.addEventListener('change', e=>setPlanZoomPercent(e.target.value));
+    percent.addEventListener('keydown', e=>{ if(e.key==='Enter') setPlanZoomPercent(e.target.value); });
+  }
+  if(out) out.onclick=()=>zoomStep(-10);
+  if(inn) inn.onclick=()=>zoomStep(10);
+  if(reset) reset.onclick=()=>setPlanZoomPercent(100);
+  if(fit) fit.onclick=fitPlanToContent;
+  canvas.addEventListener('wheel', e=>{
+    if(!e.ctrlKey) return;
+    e.preventDefault();
+    const step = e.shiftKey ? 1 : 8;
+    zoomStep(e.deltaY < 0 ? step : -step);
+  }, {passive:false});
+  applyPlanZoom();
+}
+
 document.getElementById('btnApplyProps').onclick=()=>{
   const arr=selectedObjects(); if(!arr.length) return;
   pushHistory();
@@ -1068,8 +1162,8 @@ function redo(){ if(!redoStack.length) return; historyStack.push(stateSnapshot()
 document.getElementById('showDims').onchange=e=>{showDims=e.target.checked; draw();};
 document.getElementById('scaleSelect').onchange=e=>{const [maj,snapv]=e.target.value.split('|').map(Number); majorGrid=maj; snapGrid=snapv; draw(); saveLocal();};
 document.getElementById('btnClear').onclick=()=>{if(confirm('Créer un nouveau plan ?')){pushHistory(); objects=[];clearSelection();draw();saveLocal();}};
-document.getElementById('btnSave').onclick=()=>download('bastplan-paysage.json', JSON.stringify({version:14, majorGrid, snapGrid, objects}, null, 2));
-document.getElementById('fileLoad').onchange=e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{const data=JSON.parse(r.result); objects=data.objects||[]; majorGrid=data.majorGrid||data.grid||25; snapGrid=data.snapGrid||majorGrid; clearSelection(); setScaleSelect(); draw(); saveLocal();}; r.readAsText(f);};
+document.getElementById('btnSave').onclick=()=>download('bastplan-paysage.json', JSON.stringify({version:15, majorGrid, snapGrid, planZoom, objects}, null, 2));
+document.getElementById('fileLoad').onchange=e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{const data=JSON.parse(r.result); objects=data.objects||[]; majorGrid=data.majorGrid||data.grid||25; snapGrid=data.snapGrid||majorGrid; planZoom=clampZoom(Number(data.planZoom)||planZoom||1); clearSelection(); setScaleSelect(); updateZoomControls(); applyPlanZoom(); draw(); saveLocal();}; r.readAsText(f);};
 document.getElementById('btnExport').onclick=exportPNG;
 function exportPNG(){
   draw();
@@ -1121,8 +1215,8 @@ function preparePrint(kind){
 
 function download(name,text){downloadBlob(name,new Blob([text],{type:'application/json'}));}
 function downloadBlob(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);a.remove();}
-function saveLocal(){localStorage.setItem('bastplan_paysage', JSON.stringify({majorGrid,snapGrid,objects})); if(currentView==='split') build3D();}
-function loadLocal(){try{const d=JSON.parse(localStorage.getItem('bastplan_paysage')||'{}'); objects=d.objects||[]; majorGrid=d.majorGrid||d.grid||25; snapGrid=d.snapGrid||majorGrid;}catch{objects=[]}}
+function saveLocal(){localStorage.setItem('bastplan_paysage', JSON.stringify({majorGrid,snapGrid,objects,planZoom})); if(currentView==='split') build3D();}
+function loadLocal(){try{const d=JSON.parse(localStorage.getItem('bastplan_paysage')||'{}'); objects=d.objects||[]; majorGrid=d.majorGrid||d.grid||25; snapGrid=d.snapGrid||majorGrid; planZoom=clampZoom(Number(d.planZoom)||1);}catch{objects=[]; planZoom=1;}}
 function setScaleSelect(){ const v=`${majorGrid}|${snapGrid}`; const s=document.getElementById('scaleSelect'); if([...s.options].some(o=>o.value===v)) s.value=v; }
 
 function setView(v){ currentView=v; canvas.style.display=(v==='3d')?'none':'block'; view3d.style.display=(v==='2d')?'none':'block'; view3d.classList.toggle('split3d', v==='split'); ['btn2d','btn3d','btnSplit'].forEach(id=>document.getElementById(id).classList.remove('active')); document.getElementById(v==='2d'?'btn2d':v==='3d'?'btn3d':'btnSplit').classList.add('active'); if(v!=='2d') build3D(); }
@@ -1361,4 +1455,4 @@ function buildCanvas3D(){
   objects.forEach(o=>{ const t=getTool(o.type); g.fillStyle=t.color; g.strokeStyle='#253'; if(o.x1!==undefined){const p1=iso(o.x1,o.y1,0),p2=iso(o.x2,o.y2,0),p3=iso(o.x2,o.y2,heightOf(o,t,.02)),p4=iso(o.x1,o.y1,heightOf(o,t,.02)); g.beginPath();g.moveTo(p1.x,p1.y);g.lineTo(p2.x,p2.y);g.lineTo(p3.x,p3.y);g.lineTo(p4.x,p4.y);g.closePath();g.fill();g.stroke();} else if(o.r){const p=iso(o.x,o.y,heightOf(o,t,.02)); g.beginPath();g.arc(p.x,p.y,Math.max(8,o.r/majorGrid*10),0,Math.PI*2);g.fill();g.stroke();} else {const h=heightOf(o,t,.02), x=o.x||centroid(o.points||[]).x, y=o.y||centroid(o.points||[]).y, w=o.w||majorGrid, hh=o.h||majorGrid; const p=iso(x+w/2,y+hh/2,h); g.fillRect(p.x-16,p.y-16,32,32); g.strokeRect(p.x-16,p.y-16,32,32);} });
 }
 
-loadTextureAssets(); loadLocal(); setScaleSelect(); initTools(); draw();
+loadTextureAssets(); loadLocal(); setScaleSelect(); initTools(); initZoomControls(); draw();

@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BastPlan Paysage - Prototype avancé v27 courbes surfaces texturées</title>
+  <title>BastPlan Paysage - Prototype avancé v28 zoom interne</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><strong>BastPlan Paysage</strong><span>v27-courbes-surfaces-texture</span></div>
+    <div class="brand"><strong>BastPlan Paysage</strong><span>v28-zoom-interne</span></div>
     <div class="top-actions">
       <button id="btnClear">Nouveau</button>
       <label class="file-btn">Ouvrir<input type="file" id="fileLoad" accept="application/json" /></label>
@@ -90,6 +90,16 @@
 
     <section class="workspace">
       <canvas id="plan" width="1400" height="850"></canvas>
+      <div id="zoomControls" class="zoom-controls" aria-label="Zoom du plan">
+        <button id="btnZoomOut" type="button" title="Dézoomer">−</button>
+        <label for="planZoomSlider">Zoom</label>
+        <input id="planZoomSlider" type="range" min="25" max="500" step="1" value="100" />
+        <input id="planZoomPercent" type="number" min="25" max="500" step="1" value="100" aria-label="Zoom en pourcentage" />
+        <span>%</span>
+        <button id="btnZoomIn" type="button" title="Zoomer">+</button>
+        <button id="btnZoomReset" type="button" title="Revenir à 100 %">100%</button>
+        <button id="btnZoomFit" type="button" title="Ajuster au contenu">Ajuster</button>
+      </div>
       <div id="view3d"><canvas id="fallback3d"></canvas></div>
       <div id="contextMenu" class="context-menu">
         <button data-action="copy">Copier <span>Ctrl+C</span></button>
@@ -165,7 +175,7 @@
     </div>
   </div>
 
-  <footer>Unité : mètre (m) · Zoom navigateur possible · Maintenir MAJ pour angles libres selon besoin · Clic droit pour le menu · Ctrl+glisser ajoute · Alt+glisser retire · Double-clic édite / termine une forme libre ou une courbe</footer>
+  <footer>Unité : mètre (m) · Zoom interne avec la barre ou Ctrl+molette · Maintenir MAJ pour angles libres selon besoin · Clic droit pour le menu · Ctrl+glisser ajoute · Alt+glisser retire · Double-clic édite / termine une forme libre ou une courbe</footer>
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="app.js"></script>
 </body>

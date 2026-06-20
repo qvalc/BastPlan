@@ -556,3 +556,52 @@ footer {
 #fallback3d {
     cursor: default !important;
 }
+
+/* Barre de zoom interne du plan */
+.zoom-controls {
+    position: sticky;
+    left: 12px;
+    bottom: 12px;
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    width: max-content;
+    max-width: calc(100% - 24px);
+    margin: 10px 0 0 10px;
+    padding: 8px 10px;
+    background: rgba(17, 27, 34, .94);
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+    color: #edf5eb;
+    font-size: 12px;
+}
+
+.zoom-controls label {
+    margin: 0;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.zoom-controls input[type="range"] {
+    width: 170px;
+    padding: 0;
+}
+
+.zoom-controls input[type="number"] {
+    width: 64px;
+    padding: 6px 7px;
+    text-align: right;
+}
+
+.zoom-controls button {
+    padding: 6px 9px;
+    min-width: 32px;
+}
+
+@media print {
+    .zoom-controls {
+        display: none !important;
+    }
+}
