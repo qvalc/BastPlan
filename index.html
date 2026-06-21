@@ -6,6 +6,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BastPlan</title>
   <link rel="stylesheet" href="style.css" />
+
+  <style>
+    .project-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.92);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .project-bar label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .project-bar input {
+      min-width: 260px;
+      padding: 8px 10px;
+      border: 1px solid rgba(0,0,0,0.18);
+      border-radius: 10px;
+      font: inherit;
+    }
+    .project-bar .mode-indicator {
+      margin-left: auto;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #e8f1e8;
+      color: #174222;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+    .welcome-card {
+      position: absolute;
+      z-index: 5;
+      top: 24px;
+      left: 24px;
+      width: min(430px, calc(100% - 48px));
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.14);
+      border: 1px solid rgba(0,0,0,0.10);
+    }
+    .welcome-card h2 { margin: 0 0 8px; }
+    .welcome-card p { margin: 0 0 14px; line-height: 1.45; }
+    .welcome-actions { display:flex; flex-wrap:wrap; gap:8px; }
+    .quick-actions { display:grid; gap:8px; margin: 12px 0 16px; }
+    .quick-actions button, .project-bar button, .welcome-actions button { cursor:pointer; }
+    .notes-area {
+      width: 100%;
+      min-height: 86px;
+      resize: vertical;
+      padding: 10px;
+      border: 1px solid rgba(0,0,0,0.18);
+      border-radius: 10px;
+      font: inherit;
+    }
+    .help-list { margin: 12px 0 0; padding-left: 18px; line-height: 1.55; }
+    @media (max-width: 760px) {
+      .project-bar input { min-width: 170px; width: 100%; }
+      .project-bar .mode-indicator { margin-left: 0; width: 100%; }
+    }
+  </style>
 </head>
 
 <body>
@@ -16,6 +82,8 @@
     </div>
     <div class="top-actions">
       <button id="btnClear">Nouveau</button>
+      <button id="btnExample" type="button">Exemple</button>
+      <button id="btnHelp" type="button">Aide</button>
       <label class="file-btn">Ouvrir<input type="file" id="fileLoad" accept="application/json" /></label>
       <button id="btnSave">Enregistrer</button>
       <button id="btnExport">Exporter PNG</button>
@@ -29,6 +97,13 @@
       <button id="btnSplit">Aperçu 2D+3D</button>
     </div>
   </header>
+
+  <section class="project-bar" aria-label="Informations du projet">
+    <label>Nom du projet
+      <input id="projectName" type="text" placeholder="Ex : Jardin maison, terrasse client...">
+    </label>
+    <span id="currentMode" class="mode-indicator">Mode actuel : Sélection / déplacement</span>
+  </section>
 
   <main class="app-shell">
     <aside class="left-panel">
@@ -95,6 +170,15 @@
 
     <section class="workspace">
       <canvas id="plan" width="1400" height="850"></canvas>
+      <div id="welcomeCard" class="welcome-card">
+        <h2>Bienvenue dans BastPlan</h2>
+        <p>Commencez un nouveau plan, ouvrez un fichier existant ou chargez un exemple pour découvrir rapidement les possibilités.</p>
+        <div class="welcome-actions">
+          <button id="welcomeStart" type="button">Commencer</button>
+          <button id="welcomeExample" type="button">Charger un exemple</button>
+          <button id="welcomeHelp" type="button">Aide rapide</button>
+        </div>
+      </div>
       <div id="zoomControls" class="zoom-controls" aria-label="Zoom du plan">
         <button id="btnZoomOut" type="button" title="Dézoomer">−</button>
         <label for="planZoomSlider">Zoom</label>
@@ -147,6 +231,16 @@
         <button id="btnApplyProps">Appliquer</button>
         <button id="btnPreciseRight">Dimensions précises…</button>
       </div>
+
+      <div class="quick-actions" aria-label="Actions rapides sur l’objet sélectionné">
+        <button id="btnDeleteSelected" type="button">Supprimer l’objet sélectionné</button>
+        <button id="btnLockSelected" type="button">Verrouiller / déverrouiller</button>
+      </div>
+
+      <h2>Notes du projet</h2>
+      <label>Remarques
+        <textarea id="projectNotes" class="notes-area" placeholder="Ex : contraintes, matériaux prévus, remarques client..."></textarea>
+      </label>
       <h2>Résumé des quantités</h2>
       <div id="summary" class="summary"></div>
     </aside>
@@ -181,11 +275,112 @@
     </div>
   </div>
 
+
+
+  <div id="helpModal" class="modal-backdrop">
+    <div class="modal-box">
+      <h2>Aide rapide</h2>
+      <p class="small">Les bases pour utiliser BastPlan.</p>
+      <ul class="help-list">
+        <li>Sélectionnez un outil à gauche, puis dessinez sur le plan.</li>
+        <li>Utilisez “Sélection / déplacement” pour déplacer, modifier ou redimensionner un objet.</li>
+        <li>Le clic droit ouvre le menu : copier, dupliquer, verrouiller, supprimer.</li>
+        <li>Ctrl + glisser ajoute une zone, Alt + glisser retire une zone.</li>
+        <li>Double-clic : édite ou termine une forme libre / une courbe.</li>
+        <li>Utilisez le panneau de droite pour entrer des dimensions précises.</li>
+        <li>Le zoom se règle avec la barre ou Ctrl + molette.</li>
+      </ul>
+      <div class="modal-actions">
+        <button id="btnHelpClose">Fermer</button>
+      </div>
+    </div>
+  </div>
+
   <footer>Unité : mètre (m) · Zoom interne avec la barre ou Ctrl+molette · Maintenir MAJ pour angles libres selon besoin
     · Clic droit pour le menu · Ctrl+glisser ajoute · Alt+glisser retire · Double-clic édite / termine une forme libre
     ou une courbe</footer>
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const welcomeCard = document.getElementById("welcomeCard");
+      const btnHelp = document.getElementById("btnHelp");
+      const helpModal = document.getElementById("helpModal");
+      const btnHelpClose = document.getElementById("btnHelpClose");
+      const welcomeStart = document.getElementById("welcomeStart");
+      const welcomeHelp = document.getElementById("welcomeHelp");
+      const btnClear = document.getElementById("btnClear");
+      const currentMode = document.getElementById("currentMode");
+      const toolButtons = document.querySelectorAll(".tool, #tools button, #libraryPanel button");
+      const btnDeleteSelected = document.getElementById("btnDeleteSelected");
+      const btnLockSelected = document.getElementById("btnLockSelected");
+      const btnExample = document.getElementById("btnExample");
+      const welcomeExample = document.getElementById("welcomeExample");
+
+      function openHelp() {
+        if (helpModal) helpModal.style.display = "flex";
+      }
+
+      function closeHelp() {
+        if (helpModal) helpModal.style.display = "none";
+      }
+
+      function hideWelcome() {
+        if (welcomeCard) welcomeCard.style.display = "none";
+      }
+
+      if (btnHelp) btnHelp.addEventListener("click", openHelp);
+      if (welcomeHelp) welcomeHelp.addEventListener("click", openHelp);
+      if (btnHelpClose) btnHelpClose.addEventListener("click", closeHelp);
+      if (welcomeStart) welcomeStart.addEventListener("click", hideWelcome);
+
+      if (btnClear) {
+        btnClear.addEventListener("click", function (event) {
+          const ok = confirm("Créer un nouveau plan ? Les modifications non enregistrées seront perdues.");
+          if (!ok) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          } else {
+            hideWelcome();
+          }
+        }, true);
+      }
+
+      document.addEventListener("click", function (event) {
+        const button = event.target.closest("button");
+        if (!button || !currentMode) return;
+        if (button.id === "selectToolBtn") {
+          currentMode.textContent = "Mode actuel : Sélection / déplacement";
+          hideWelcome();
+        } else if (button.classList.contains("tool") || button.closest("#tools") || button.closest("#libraryPanel")) {
+          currentMode.textContent = "Mode actuel : " + button.textContent.trim();
+          hideWelcome();
+        }
+      });
+
+      if (btnDeleteSelected) {
+        btnDeleteSelected.addEventListener("click", function () {
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Delete", bubbles: true }));
+        });
+      }
+
+      if (btnLockSelected) {
+        btnLockSelected.addEventListener("click", function () {
+          const lockButton = document.querySelector('#contextMenu [data-action="lock"]');
+          if (lockButton) lockButton.click();
+        });
+      }
+
+      function loadExample() {
+        hideWelcome();
+        alert("Exemple à connecter dans app.js : ce bouton est prêt côté HTML pour charger un plan de démonstration.");
+      }
+
+      if (btnExample) btnExample.addEventListener("click", loadExample);
+      if (welcomeExample) welcomeExample.addEventListener("click", loadExample);
+    });
+  </script>
+
 </body>
 
 </html>
