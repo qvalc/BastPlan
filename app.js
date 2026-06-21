@@ -27,6 +27,7 @@ let historyStack = [];
 let redoStack = [];
 let currentView = '2d';
 let planZoom = 1; // zoom visuel interne du canvas : 1 = 100 %
+let dimLabelBoxes = []; // zones réservées pour éviter que les libellés de côtes se chevauchent
 
 // Détail / taille visuelle de la texture.
 // 1x = taille de base, 50x = texture beaucoup plus grande et donc détails plus visibles.
@@ -613,11 +614,12 @@ document.addEventListener('change', e=>{
 canvas.addEventListener('mousedown', e=>{
   hideContextMenu();
   if(e.button!==0) return;
-  const p=pos(e);
+  const raw = rawPos(e);
+  const p = activeTool.mode === 'select' ? raw : pos(e);
   if(activeTool.mode==='select'){
-    const handle = selectedId ? handleHit(p.x,p.y, primarySelected()) : null;
+    const handle = selectedId ? handleHit(raw.x, raw.y, primarySelected()) : null;
     if(handle){ const ro=primarySelected(); if(ro?.locked) return; resizing={id:ro.id, handle, start:p, original:clone(ro)}; pushHistory(); return; }
-    const clickedId = hitTest(p.x,p.y);
+    const clickedId = hitTest(raw.x, raw.y);
     if(e.ctrlKey && clickedId){
       if(isSelected(clickedId)) setSelection(selectedIds.filter(id=>id!==clickedId));
       else setSelection([...selectedIds, clickedId]);
@@ -639,13 +641,15 @@ canvas.addEventListener('mousedown', e=>{
   drawing={start, end:start};
 });
 canvas.addEventListener('mousemove', e=>{
-  const p=pos(e);
+  const raw = rawPos(e);
+  const p = activeTool.mode === 'select' ? raw : pos(e);
   if(activeTool.mode==='select' && resizing){ resizeObject(resizing, p); draw(); return; }
   if(activeTool.mode==='select' && dragging){ moveSelection(dragging, p); draw(); return; }
   if(activeTool.mode==='select' && selectingRect){ selectingRect.end=p; draw(); drawSelectionRect(); return; }
   if(activeTool.mode==='select'){
-    const h = selectedId ? handleHit(p.x,p.y, primarySelected()) : null;
-    canvas.style.cursor = h ? 'nwse-resize' : DEFAULT_CURSOR;
+    const h = selectedId ? handleHit(raw.x,raw.y, primarySelected()) : null;
+    const over = hitTest(raw.x, raw.y);
+    canvas.style.cursor = h ? cursorForHandle(h) : (over ? 'move' : DEFAULT_CURSOR);
     return;
   }
   if(drawing){ drawing.end=p; draw(); drawPreview(); }
@@ -755,14 +759,22 @@ function offsetObject(o,dx,dy){ if(o.x!==undefined){o.x+=dx;o.y+=dy;} if(o.x1!==
 function moveObject(d,p){ const dx=p.x-d.start.x, dy=p.y-d.start.y; const o=objects.find(x=>x.id===d.id); Object.assign(o, clone(d.original)); offsetObject(o, dx, dy); }
 function moveSelection(d,p){ const dx=p.x-d.start.x, dy=p.y-d.start.y; d.originals.forEach(orig=>{ const o=objects.find(x=>x.id===orig.id); if(o && !o.locked){ Object.assign(o, clone(orig)); offsetObject(o, dx, dy); } }); }
 function resizeObject(r,p){ const o=objects.find(x=>x.id===r.id), b=r.original; if(!o) return;
-  if(b.r){ const dist=Math.max(snapGrid, Math.hypot(p.x-b.x, p.y-b.y)); o.r=dist; return; }
-  if(b.x1!==undefined){ if(r.handle==='a'){o.x1=p.x;o.y1=p.y;} else {o.x2=p.x;o.y2=p.y;} return; }
-  if(b.points){ const c=centroid(b.points); const start=Math.max(1, Math.hypot(r.start.x-c.x,r.start.y-c.y)); const now=Math.max(.1, Math.hypot(p.x-c.x,p.y-c.y)); const f=now/start; o.points=b.points.map(pt=>({x:snap(c.x+(pt.x-c.x)*f), y:snap(c.y+(pt.y-c.y)*f)})); return; }
+  const q={x:snap(p.x), y:snap(p.y)};
+  if(b.r){ const dist=Math.max(snapGrid, snap(Math.hypot(p.x-b.x, p.y-b.y))); o.r=dist; return; }
+  if(b.x1!==undefined){ if(r.handle==='a'){o.x1=q.x;o.y1=q.y;} else {o.x2=q.x;o.y2=q.y;} return; }
+  if(b.points){
+    const c=centroid(b.points);
+    const start=Math.max(1, Math.hypot(r.start.x-c.x,r.start.y-c.y));
+    const now=Math.max(.1, Math.hypot(p.x-c.x,p.y-c.y));
+    const f=now/start;
+    o.points=b.points.map(pt=>({x:snap(c.x+(pt.x-c.x)*f), y:snap(c.y+(pt.y-c.y)*f)}));
+    return;
+  }
   let x=b.x, y=b.y, w=b.w, h=b.h;
-  if(r.handle.includes('e')) w=Math.max(snapGrid, p.x-b.x);
-  if(r.handle.includes('s')) h=Math.max(snapGrid, p.y-b.y);
-  if(r.handle.includes('w')){ const right=b.x+b.w; x=Math.min(p.x,right-snapGrid); w=right-x; }
-  if(r.handle.includes('n')){ const bottom=b.y+b.h; y=Math.min(p.y,bottom-snapGrid); h=bottom-y; }
+  if(r.handle.includes('e')) w=Math.max(snapGrid, q.x-b.x);
+  if(r.handle.includes('s')) h=Math.max(snapGrid, q.y-b.y);
+  if(r.handle.includes('w')){ const right=b.x+b.w; x=Math.min(q.x,right-snapGrid); w=right-x; }
+  if(r.handle.includes('n')){ const bottom=b.y+b.h; y=Math.min(q.y,bottom-snapGrid); h=bottom-y; }
   Object.assign(o,{x,y,w,h});
 }
 
@@ -776,7 +788,14 @@ function hitTest(x,y){
   }
   return null;
 }
-function handleHit(x,y,o){ if(!o) return null; return handles(o).find(h=>Math.abs(x-h.x)<=8 && Math.abs(y-h.y)<=8)?.key || null; }
+function handleHit(x,y,o){ if(!o) return null; const tol=12; return handles(o).find(h=>Math.abs(x-h.x)<=tol && Math.abs(y-h.y)<=tol)?.key || null; }
+function cursorForHandle(h){
+  if(['n','s'].includes(h)) return 'ns-resize';
+  if(['e','w'].includes(h)) return 'ew-resize';
+  if(['ne','sw'].includes(h)) return 'nesw-resize';
+  if(['nw','se','scale','scale2','r','a','b'].includes(h)) return 'nwse-resize';
+  return 'move';
+}
 function handles(o){
   if(!o) return [];
   if(o.r) return [{key:'r',x:o.x+o.r,y:o.y}];
@@ -789,7 +808,7 @@ function handles(o){
   ];
   return [];
 }
-function drawHandles(o){ ctx.save(); ctx.fillStyle='#ff7b00'; ctx.strokeStyle='white'; ctx.lineWidth=0.8; handles(o).forEach(h=>{ctx.beginPath();ctx.rect(h.x-3,h.y-3,6,6);ctx.fill();ctx.stroke();}); ctx.restore(); }
+function drawHandles(o){ ctx.save(); ctx.fillStyle='#ff7b00'; ctx.strokeStyle='white'; ctx.lineWidth=1; handles(o).forEach(h=>{ctx.beginPath();ctx.rect(h.x-5,h.y-5,10,10);ctx.fill();ctx.stroke();}); ctx.restore(); }
 function drawSelectionBox(o){
   const pts=[];
   if(o.x1!==undefined) pts.push({x:o.x1,y:o.y1},{x:o.x2,y:o.y2});
@@ -881,6 +900,7 @@ function finishSelectionRect(){
 }
 
 function draw(){
+  dimLabelBoxes=[];
   ctx.clearRect(0,0,canvas.width,canvas.height); drawGrid(); objects.forEach(drawObj);
   if(polyDraft.length){ctx.strokeStyle='#111';ctx.setLineDash([6,4]); if(activeTool?.mode==='curve') drawSmoothOpenPath(polyDraft, false); else {ctx.beginPath();polyDraft.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();} ctx.setLineDash([]);polyDraft.forEach(p=>dot(p.x,p.y)); if(showDims) activeTool?.mode==='curve' ? drawCurveDims(polyDraft) : drawPolyDims(polyDraft); }
   selectedObjects().forEach((so,i)=>{ if(i===0) drawHandles(so); else drawSelectionBox(so); });
@@ -1012,19 +1032,41 @@ function label(o,x,y){ctx.fillStyle='#172017';ctx.font='bold 11px Arial';ctx.tex
 function dot(x,y){ctx.fillStyle='#111';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();}
 function centroid(pts){return pts.reduce((a,p)=>({x:a.x+p.x/pts.length,y:a.y+p.y/pts.length}),{x:0,y:0});}
 function polyBounds(pts){return pts.reduce((b,p)=>({minX:Math.min(b.minX,p.x),minY:Math.min(b.minY,p.y),maxX:Math.max(b.maxX,p.x),maxY:Math.max(b.maxY,p.y)}),{minX:Infinity,minY:Infinity,maxX:-Infinity,maxY:-Infinity});}
-function dimText(txt,x,y,angle=0){
+function boxesOverlap(a,b){
+  return !(a.x+a.w < b.x || b.x+b.w < a.x || a.y+a.h < b.y || b.y+b.h < a.y);
+}
+function dimBoxFor(x,y,w,h,angle=0){
+  const ca=Math.abs(Math.cos(angle)), sa=Math.abs(Math.sin(angle));
+  const bw=w*ca+h*sa+6;
+  const bh=w*sa+h*ca+6;
+  return {x:x-bw/2, y:y-bh/2, w:bw, h:bh};
+}
+function findFreeDimPosition(x,y,w,h,angle,nx=0,ny=-1){
+  const shifts=[0,16,-16,32,-32,48,-48,64,-64];
+  for(const sh of shifts){
+    const bx=x+nx*sh, by=y+ny*sh;
+    const box=dimBoxFor(bx,by,w,h,angle);
+    if(!dimLabelBoxes.some(other=>boxesOverlap(box,other))) return {x:bx,y:by,box};
+  }
+  const box=dimBoxFor(x,y,w,h,angle);
+  return {x,y,box};
+}
+function dimText(txt,x,y,angle=0,nx=0,ny=-1){
   ctx.save();
-  ctx.translate(x,y);
-  if(angle) ctx.rotate(angle);
   ctx.font='bold 10px Arial';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
   const w=ctx.measureText(txt).width+8;
+  const h=16;
+  const pos=findFreeDimPosition(x,y,w,h,angle,nx,ny);
+  dimLabelBoxes.push(pos.box);
+  ctx.translate(pos.x,pos.y);
+  if(angle) ctx.rotate(angle);
   ctx.fillStyle='rgba(255,255,255,.92)';
-  ctx.fillRect(-w/2,-8,w,16);
+  ctx.fillRect(-w/2,-h/2,w,h);
   ctx.strokeStyle='rgba(30,45,35,.8)';
   ctx.lineWidth=.35;
-  ctx.strokeRect(-w/2,-8,w,16);
+  ctx.strokeRect(-w/2,-h/2,w,h);
   ctx.fillStyle='#111';
   ctx.fillText(txt,0,0);
   ctx.restore();
@@ -1036,7 +1078,7 @@ function drawTick(x,y,nx,ny){
   ctx.lineTo(x + ny*s + nx*s*.45, y - nx*s + ny*s*.45);
   ctx.stroke();
 }
-function drawAlignedDimension(a,b,offset=18,labelOverride=null){
+function drawAlignedDimension(a,b,offset=18,labelOverride=null,isSelectedDim=false){
   const dx=b.x-a.x, dy=b.y-a.y;
   const lenPx=Math.hypot(dx,dy);
   if(lenPx < 2) return;
@@ -1046,9 +1088,9 @@ function drawAlignedDimension(a,b,offset=18,labelOverride=null){
   const bo={x:b.x+nx*offset, y:b.y+ny*offset};
   const ext=6;
   ctx.save();
-  ctx.strokeStyle='rgba(25,35,30,.9)';
-  ctx.fillStyle='rgba(25,35,30,.9)';
-  ctx.lineWidth=.55;
+  ctx.strokeStyle = isSelectedDim ? '#ff7b00' : 'rgba(25,35,30,.9)';
+  ctx.fillStyle   = isSelectedDim ? '#ff7b00' : 'rgba(25,35,30,.9)';
+  ctx.lineWidth   = isSelectedDim ? 1.2 : .55;
   ctx.setLineDash([]);
   // lignes d'attache
   ctx.beginPath();
@@ -1063,24 +1105,27 @@ function drawAlignedDimension(a,b,offset=18,labelOverride=null){
   drawTick(bo.x,bo.y,nx,ny);
   const txt=labelOverride || `${meters(lenPx/majorGrid)} m`;
   const angle = Math.abs(Math.atan2(dy,dx)) > Math.PI/2 ? Math.atan2(dy,dx)+Math.PI : Math.atan2(dy,dx);
-  dimText(txt, (ao.x+bo.x)/2, (ao.y+bo.y)/2 - 10*Math.sign(offset||1), angle);
+  dimText(txt, (ao.x+bo.x)/2, (ao.y+bo.y)/2 - 10*Math.sign(offset||1), angle, nx*Math.sign(offset||1), ny*Math.sign(offset||1));
   ctx.restore();
 }
 function drawLineDim(a,b){
   drawAlignedDimension(a,b,18);
 }
 function drawRectDims(o){
+  const sel = o && o.id===selectedId;
   // vraies cotes : lignes de cote extérieures + lignes d'attache
-  drawAlignedDimension({x:o.x,y:o.y},{x:o.x+o.w,y:o.y},-18);
-  drawAlignedDimension({x:o.x+o.w,y:o.y},{x:o.x+o.w,y:o.y+o.h},18);
+  drawAlignedDimension({x:o.x,y:o.y},{x:o.x+o.w,y:o.y},-18,null,sel);
+  drawAlignedDimension({x:o.x+o.w,y:o.y},{x:o.x+o.w,y:o.y+o.h},18,null,sel);
 }
 function drawEllipseDims(o){
+  const sel = o && o.id===selectedId;
   const cx=o.x+o.w/2, cy=o.y+o.h/2;
-  drawAlignedDimension({x:o.x,y:cy},{x:o.x+o.w,y:cy},-(o.h/2+20), `${meters(o.w/majorGrid)} m`);
-  drawAlignedDimension({x:cx,y:o.y},{x:cx,y:o.y+o.h},(o.w/2+20), `${meters(o.h/majorGrid)} m`);
+  drawAlignedDimension({x:o.x,y:cy},{x:o.x+o.w,y:cy},-(o.h/2+20), `${meters(o.w/majorGrid)} m`, sel);
+  drawAlignedDimension({x:cx,y:o.y},{x:cx,y:o.y+o.h},(o.w/2+20), `${meters(o.h/majorGrid)} m`, sel);
 }
 function drawCircleDim(o){
-  drawAlignedDimension({x:o.x-o.r,y:o.y},{x:o.x+o.r,y:o.y},o.r+18, `Ø ${meters((o.r*2)/majorGrid)} m`);
+  const sel = o && o.id===selectedId;
+  drawAlignedDimension({x:o.x-o.r,y:o.y},{x:o.x+o.r,y:o.y},o.r+18, `Ø ${meters((o.r*2)/majorGrid)} m`, sel);
 }
 function drawPolyDims(pts){
   for(let i=1;i<pts.length;i++) drawAlignedDimension(pts[i-1],pts[i],16);

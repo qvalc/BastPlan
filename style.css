@@ -605,3 +605,14 @@ footer {
         display: none !important;
     }
 }
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #78cf45;
+}
+
+.brand-logo {
+    height: 46px;
+}

@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BastPlan Paysage - Prototype avancé v29 menus fermés et sans texture</title>
+  <title>BastPlan</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <header class="topbar">
-    <div class="brand"><strong>BastPlan</strong><span></span></div>
+    <div class="brand">
+      <img src="logo-bastplan.png" alt="BastPlan" class="brand-logo">
+      <strong>BastPlan</strong>
+    </div>
     <div class="top-actions">
       <button id="btnClear">Nouveau</button>
       <label class="file-btn">Ouvrir<input type="file" id="fileLoad" accept="application/json" /></label>
@@ -94,7 +99,8 @@
         <button id="btnZoomOut" type="button" title="Dézoomer">−</button>
         <label for="planZoomSlider">Zoom</label>
         <input id="planZoomSlider" type="range" min="25" max="500" step="1" value="100" />
-        <input id="planZoomPercent" type="number" min="25" max="500" step="1" value="100" aria-label="Zoom en pourcentage" />
+        <input id="planZoomPercent" type="number" min="25" max="500" step="1" value="100"
+          aria-label="Zoom en pourcentage" />
         <span>%</span>
         <button id="btnZoomIn" type="button" title="Zoomer">+</button>
         <button id="btnZoomReset" type="button" title="Revenir à 100 %">100%</button>
@@ -175,8 +181,11 @@
     </div>
   </div>
 
-  <footer>Unité : mètre (m) · Zoom interne avec la barre ou Ctrl+molette · Maintenir MAJ pour angles libres selon besoin · Clic droit pour le menu · Ctrl+glisser ajoute · Alt+glisser retire · Double-clic édite / termine une forme libre ou une courbe</footer>
+  <footer>Unité : mètre (m) · Zoom interne avec la barre ou Ctrl+molette · Maintenir MAJ pour angles libres selon besoin
+    · Clic droit pour le menu · Ctrl+glisser ajoute · Alt+glisser retire · Double-clic édite / termine une forme libre
+    ou une courbe</footer>
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>
