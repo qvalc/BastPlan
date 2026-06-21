@@ -8,38 +8,6 @@
   <link rel="stylesheet" href="style.css" />
 
   <style>
-    .project-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      padding: 10px 14px;
-      background: rgba(255,255,255,0.92);
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-    }
-    .project-bar label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
-    .project-bar input {
-      min-width: 260px;
-      padding: 8px 10px;
-      border: 1px solid rgba(0,0,0,0.18);
-      border-radius: 10px;
-      font: inherit;
-    }
-    .project-bar .mode-indicator {
-      margin-left: auto;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: #e8f1e8;
-      color: #174222;
-      font-weight: 800;
-      font-size: 0.9rem;
-    }
     .welcome-card {
       position: absolute;
       z-index: 5;
@@ -56,7 +24,7 @@
     .welcome-card p { margin: 0 0 14px; line-height: 1.45; }
     .welcome-actions { display:flex; flex-wrap:wrap; gap:8px; }
     .quick-actions { display:grid; gap:8px; margin: 12px 0 16px; }
-    .quick-actions button, .project-bar button, .welcome-actions button { cursor:pointer; }
+    .quick-actions button, .welcome-actions button { cursor:pointer; }
     .notes-area {
       width: 100%;
       min-height: 86px;
@@ -67,10 +35,6 @@
       font: inherit;
     }
     .help-list { margin: 12px 0 0; padding-left: 18px; line-height: 1.55; }
-    @media (max-width: 760px) {
-      .project-bar input { min-width: 170px; width: 100%; }
-      .project-bar .mode-indicator { margin-left: 0; width: 100%; }
-    }
   </style>
 </head>
 
@@ -81,6 +45,8 @@
       <strong>BastPlan</strong>
     </div>
     <div class="top-actions">
+      <input id="projectName" class="project-name-top" type="text" placeholder="Nom du projet">
+
       <div class="menu-dropdown">
         <button type="button" class="menu-trigger">Projet ▾</button>
         <div class="menu-content">
@@ -117,17 +83,21 @@
     </div>
   </header>
 
-  <section class="project-bar" aria-label="Informations du projet">
-    <label>Nom du projet
-      <input id="projectName" type="text" placeholder="Ex : Jardin maison, terrasse client...">
-    </label>
-    <span id="currentMode" class="mode-indicator">Mode actuel : Sélection / déplacement</span>
-  </section>
-
   <main class="app-shell">
     <aside class="left-panel">
       <h2>Outils</h2>
-      <button id="selectToolBtn" class="tool main-select">Sélection / déplacement</button>
+      <div class="tool-palette" aria-label="Palette d’outils">
+        <button id="selectToolBtn" class="tool-icon" type="button" title="Sélection / déplacement" aria-label="Sélection / déplacement">↖</button>
+        <button id="lineToolBtn" class="tool-icon" type="button" title="Ligne droite" aria-label="Ligne droite">╱</button>
+        <button id="polylineToolBtn" class="tool-icon" type="button" title="Ligne brisée" aria-label="Ligne brisée">└</button>
+        <button id="curveToolBtn" class="tool-icon" type="button" title="Courbe / tracé souple" aria-label="Courbe / tracé souple">〰</button>
+        <button id="rectToolBtn" class="tool-icon" type="button" title="Rectangle" aria-label="Rectangle">▭</button>
+        <button id="circleToolBtn" class="tool-icon" type="button" title="Cercle / ovale" aria-label="Cercle / ovale">○</button>
+        <button id="textToolBtn" class="tool-icon" type="button" title="Texte" aria-label="Texte">T</button>
+        <button id="imageToolBtn" class="tool-icon" type="button" title="Image" aria-label="Image">▧</button>
+        <button id="measureToolBtn" class="tool-icon" type="button" title="Cote manuelle" aria-label="Cote manuelle">⇔</button>
+        <button id="eraserToolBtn" class="tool-icon" type="button" title="Gomme / supprimer" aria-label="Gomme / supprimer">⌫</button>
+      </div>
       <details id="objectDrawer" class="object-drawer">
         <summary>Bibliothèque de base</summary>
         <label>Forme de l’objet
@@ -293,7 +263,6 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const btnClear = document.getElementById("btnClear");
-      const currentMode = document.getElementById("currentMode");
       const btnDeleteSelected = document.getElementById("btnDeleteSelected");
       const btnLockSelected = document.getElementById("btnLockSelected");
       const btnExample = document.getElementById("btnExample");
@@ -307,17 +276,6 @@
           }
         }, true);
       }
-
-      document.addEventListener("click", function (event) {
-        const button = event.target.closest("button");
-        if (!button || !currentMode) return;
-
-        if (button.id === "selectToolBtn") {
-          currentMode.textContent = "Mode actuel : Sélection / déplacement";
-        } else if (button.classList.contains("tool") || button.closest("#tools") || button.closest("#libraryPanel")) {
-          currentMode.textContent = "Mode actuel : " + button.textContent.trim();
-        }
-      });
 
       if (btnDeleteSelected) {
         btnDeleteSelected.addEventListener("click", function () {

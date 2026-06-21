@@ -38,8 +38,11 @@ const TEXTURE_SCALE_MAX = 50;
 const TEXTURE_SCALE_DEFAULT = 1;
 
 const toolDefs = [
-  { id: 'select', label: 'Sélection / déplacement', mode: 'select' },
+  { id: 'select', label: 'Sélection', mode: 'select' },
+  { id: 'eraser', label: 'Gomme', mode: 'eraser', color: '#d9534f', unit: 'pc', h: 0, source: 'system' },
   { id: 'image', label: 'Image importée', mode: 'rect', color: '#ffffff', unit: 'pc', h: 0.02, texture: '', source: 'system' },
+  { id: 'ligne', label: 'Ligne droite', mode: 'line', color: '#111111', unit: 'm', h: 0, texture: '', source: 'system' },
+  { id: 'polyligne', label: 'Ligne brisée', mode: 'polyline', color: '#111111', unit: 'm', h: 0, texture: '', source: 'system' },
   { id: 'terrain', label: 'Terrain', mode: 'rect', color: '#cbe8a7', unit: 'm²', h: 0.05, texture: 'pelouse' },
   { id: 'pelouse', label: 'Pelouse', mode: 'rect', color: '#7fcf63', unit: 'm²', h: 0.03, texture: 'pelouse' },
   { id: 'terrasse', label: 'Terrasse', mode: 'rect', color: '#c59b6b', unit: 'm²', h: 0.15, texture: 'bois' },
@@ -624,6 +627,7 @@ function loadTextureAssets() {
 }
 
 activeTool = toolDefs[0];
+setTimeout(updateCurrentModeLabel, 0);
 const selectToolBtn = document.getElementById('selectToolBtn');
 const printArea = document.getElementById('printArea');
 
@@ -670,11 +674,33 @@ function cssColorToHex(c) { const d = document.createElement('div'); d.style.col
 
 function initTools() {
   toolsEl.innerHTML = '';
-  if (selectToolBtn) {
-    selectToolBtn.className = 'tool main-select' + (activeTool.id === 'select' ? ' active' : '');
-    selectToolBtn.onclick = () => setActiveTool('select');
+
+  const paletteMap = {
+    selectToolBtn: 'select',
+    lineToolBtn: 'ligne',
+    polylineToolBtn: 'polyligne',
+    curveToolBtn: 'courbe',
+    rectToolBtn: 'terrain',
+    circleToolBtn: 'eau',
+    textToolBtn: 'texte',
+    measureToolBtn: 'cote',
+    eraserToolBtn: 'eraser'
+  };
+
+  Object.entries(paletteMap).forEach(([btnId, toolId]) => {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.classList.toggle('active', activeTool?.id === toolId);
+    btn.onclick = () => setActiveTool(toolId);
+  });
+
+  const imageToolBtn = document.getElementById('imageToolBtn');
+  if (imageToolBtn) {
+    imageToolBtn.classList.toggle('active', activeTool?.id === 'image');
+    imageToolBtn.onclick = () => document.getElementById('btnAddImage')?.click();
   }
-  toolDefs.filter(t => t.id !== 'select' && !t.source).forEach(t => {
+
+  toolDefs.filter(t => !['select', 'eraser', 'image', 'ligne', 'polyligne'].includes(t.id) && !t.source).forEach(t => {
     const b = document.createElement('button');
     b.className = 'tool' + (t.id === activeTool.id ? ' active' : '');
     b.textContent = t.label;
@@ -687,14 +713,36 @@ function initTools() {
 function setActiveTool(id) {
   activeTool = { ...getTool(id) };
   updateShapeSelect();
-  if (activeTool.id !== 'select') {
-    if (activeTool.source === 'library') activeTool.shape = libraryShapeFor(activeTool);
-    else activeTool.shape = baseShapeFor(activeTool);
-    activeTool.mode = modeForShape(activeTool, activeTool.shape);
+  if (!['select', 'eraser'].includes(activeTool.id)) {
+    const fixedShapes = {
+      ligne: 'line',
+      polyligne: 'polyline',
+      courbe: 'curve',
+      cote: 'line',
+      texte: 'point',
+      image: 'rectangle'
+    };
+
+    if (fixedShapes[activeTool.id]) {
+      activeTool.shape = fixedShapes[activeTool.id];
+      activeTool.mode = getTool(activeTool.id).mode;
+    } else if (activeTool.source === 'library') {
+      activeTool.shape = libraryShapeFor(activeTool);
+      activeTool.mode = modeForShape(activeTool, activeTool.shape);
+    } else {
+      activeTool.shape = baseShapeFor(activeTool);
+      activeTool.mode = modeForShape(activeTool, activeTool.shape);
+    }
     updateShapeSelect();
   }
   polyDraft = []; drawing = null; dragging = null; resizing = null;
-  hideContextMenu(); initTools(); draw();
+  hideContextMenu(); initTools(); updateCurrentModeLabel(); draw();
+}
+
+function updateCurrentModeLabel() {
+  const el = document.getElementById('currentMode');
+  if (!el || !activeTool) return;
+  el.textContent = 'Mode actuel : ' + (activeTool.label || activeTool.id);
 }
 
 function textureCss(name) {
@@ -745,14 +793,42 @@ canvas.addEventListener('mousedown', e => {
     if (!e.ctrlKey && !e.altKey) clearSelection();
     updateProps(); draw(); return;
   }
-  if (activeTool.mode === 'point') { addObject({ type: activeTool.id, shape: 'point', x: p.x, y: p.y, r: majorGrid * .55 }); return; }
-  if (activeTool.mode === 'poly' || activeTool.mode === 'curve') { polyDraft.push(p); draw(); return; }
+  if (activeTool.mode === 'eraser') {
+    const clickedId = hitTest(raw.x, raw.y);
+    if (!clickedId) return;
+    const target = objects.find(o => o.id === clickedId);
+    if (target?.locked) return alert('Cet objet est verrouillé. Déverrouille-le avant suppression.');
+    pushHistory();
+    objects = objects.filter(o => o.id !== clickedId);
+    if (selectedIds.includes(clickedId)) clearSelection();
+    updateProps();
+    draw();
+    saveLocal();
+    return;
+  }
+  if (activeTool.mode === 'point') {
+    if (activeTool.id === 'texte') {
+      const txt = prompt('Texte à ajouter sur le plan', '');
+      if (txt === null || !txt.trim()) return;
+      addObject({ type: activeTool.id, shape: 'point', x: p.x, y: p.y, r: majorGrid * .35, name: txt.trim() });
+      return;
+    }
+    addObject({ type: activeTool.id, shape: 'point', x: p.x, y: p.y, r: majorGrid * .55 }); return;
+  }
+  if (activeTool.mode === 'poly' || activeTool.mode === 'curve' || activeTool.mode === 'polyline') { polyDraft.push(p); draw(); return; }
   const start = activeTool.mode === 'line' ? lineSnapPoint(p, activeTool.id) : p;
   drawing = { start, end: start };
 });
 canvas.addEventListener('mousemove', e => {
   const raw = rawPos(e);
   const p = activeTool.mode === 'select' ? raw : pos(e);
+  if (activeTool.mode === 'eraser') {
+    canvas.style.cursor = hitTest(raw.x, raw.y) ? 'not-allowed' : 'default';
+    return;
+  }
+  if (activeTool.id === 'texte') {
+    canvas.style.cursor = 'text';
+  }
   if (activeTool.mode === 'select' && resizing) { resizeObject(resizing, p); draw(); return; }
   if (activeTool.mode === 'select' && dragging) { moveSelection(dragging, p); draw(); return; }
   if (activeTool.mode === 'select' && selectingRect) { selectingRect.end = p; draw(); drawSelectionRect(); return; }
@@ -787,6 +863,7 @@ canvas.addEventListener('dblclick', e => {
     if (id) { setSelection(id); updateProps(); draw(); const o = primarySelected(); if (o?.type === 'texte') { const txt = prompt('Modifier le texte', o.name || 'Texte'); if (txt !== null) { pushHistory(); o.name = txt; draw(); saveLocal(); } } else openDimensionModal(); }
     return;
   }
+  if (activeTool.mode === 'polyline' && polyDraft.length >= 2) { addObject({ type: activeTool.id, shape: 'polyline', open: true, points: [...polyDraft] }); polyDraft = []; draw(); }
   if (activeTool.mode === 'poly' && polyDraft.length >= 3) { addObject({ type: activeTool.id, shape: activeTool.shape || 'free', points: [...polyDraft] }); polyDraft = []; draw(); }
   if (activeTool.mode === 'curve' && polyDraft.length >= 2) {
     const asSurface = String(activeTool.unit || '').includes('m²') || String(activeTool.unit || '').includes('m2');
@@ -854,7 +931,7 @@ function addObject(data) {
   const defaultTexture = (data.texture !== undefined) ? data.texture : '';
 
   const defaultTextureScale = normalizeTextureScale(data.textureScale !== undefined ? data.textureScale : TEXTURE_SCALE_DEFAULT);
-  const obj = { id: uid(), name: t.label, height: t.h, price: 0, rot: 0, color: t.color, locked: false, texture: defaultTexture, textureScale: defaultTextureScale, shape: t.shape || data.shape || '', libraryId: t.source === 'library' ? t.id : '', ...data, texture: defaultTexture, textureScale: defaultTextureScale };
+  const obj = { id: uid(), name: '', height: t.h, price: 0, rot: 0, color: t.color, locked: false, texture: defaultTexture, textureScale: defaultTextureScale, shape: t.shape || data.shape || '', libraryId: t.source === 'library' ? t.id : '', ...data, texture: defaultTexture, textureScale: defaultTextureScale };
   objects.push(obj);
   setSelection(obj.id);
   // On garde volontairement l'outil actif après création :
@@ -894,7 +971,7 @@ function hitTest(x, y) {
     const o = objects[i];
     if (o.r && Math.hypot(x - o.x, y - o.y) <= o.r + 8) return o.id;
     if (o.x1 !== undefined && distLine(x, y, o.x1, o.y1, o.x2, o.y2) < 10) return o.id;
-    if (o.points && ((o.shape === 'curve' || o.open) && !isSurfaceObject(o) ? curveHit(x, y, o.points, 12) : pointInPoly({ x, y }, o.points))) return o.id;
+    if (o.points && (o.shape === 'polyline' ? curveHit(x, y, o.points, 12) : ((o.shape === 'curve' || o.open) && !isSurfaceObject(o) ? curveHit(x, y, o.points, 12) : pointInPoly({ x, y }, o.points)))) return o.id;
     if (o.x !== undefined && o.w !== undefined && x >= o.x && x <= o.x + o.w && y >= o.y && y <= o.y + o.h) return o.id;
   }
   return null;
@@ -1013,7 +1090,7 @@ function finishSelectionRect() {
 function draw() {
   dimLabelBoxes = [];
   ctx.clearRect(0, 0, canvas.width, canvas.height); drawGrid(); objects.forEach(drawObj);
-  if (polyDraft.length) { ctx.strokeStyle = '#111'; ctx.setLineDash([6, 4]); if (activeTool?.mode === 'curve') drawSmoothOpenPath(polyDraft, false); else { ctx.beginPath(); polyDraft.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.stroke(); } ctx.setLineDash([]); polyDraft.forEach(p => dot(p.x, p.y)); if (showDims) activeTool?.mode === 'curve' ? drawCurveDims(polyDraft) : drawPolyDims(polyDraft); }
+  if (polyDraft.length) { ctx.strokeStyle = '#111'; ctx.setLineDash([6, 4]); if (activeTool?.mode === 'curve') drawSmoothOpenPath(polyDraft, false); else { ctx.beginPath(); polyDraft.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.stroke(); } ctx.setLineDash([]); polyDraft.forEach(p => dot(p.x, p.y)); if (showDims) activeTool?.mode === 'curve' ? drawCurveDims(polyDraft) : (activeTool?.mode === 'polyline' ? drawOpenLineDims(polyDraft) : drawPolyDims(polyDraft)); }
   selectedObjects().forEach((so, i) => { if (i === 0) drawHandles(so); else drawSelectionBox(so); });
   if (selectingRect) drawSelectionRect();
   updateSummary();
@@ -1115,6 +1192,18 @@ function drawObj(o) {
   if (o.type === 'image') { drawImageObject(o); return; }
   const t = getTool(o.type); const fill = o.color || t.color; ctx.lineWidth = isSelected(o.id) ? 1.0 : 0.35; ctx.strokeStyle = isSelected(o.id) ? '#ff7b00' : '#263328'; ctx.fillStyle = patternFill(o, fill);
   if (o.points) {
+    if (o.shape === 'polyline') {
+      ctx.strokeStyle = isSelected(o.id) ? '#ff7b00' : fill;
+      ctx.lineWidth = isSelected(o.id) ? 1.2 : 0.85;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      o.points.forEach((pt, i) => i ? ctx.lineTo(pt.x, pt.y) : ctx.moveTo(pt.x, pt.y));
+      ctx.stroke();
+      label(o, centroid(o.points).x, centroid(o.points).y - 8);
+      if (showDims && o.type !== 'polyligne') drawOpenLineDims(o.points);
+      return;
+    }
     if ((o.shape === 'curve' || o.open) && !isSurfaceObject(o, t)) {
       ctx.strokeStyle = isSelected(o.id) ? '#ff7b00' : patternFill(o, fill);
       ctx.lineWidth = (Number(o.widthM || t.widthM || 0.25) * majorGrid) || 2;
@@ -1133,7 +1222,18 @@ function drawObj(o) {
     if (showDims) drawPolyDims(o.points);
     return;
   }
-  if (o.x1 !== undefined) { ctx.strokeStyle = isSelected(o.id) ? '#ff7b00' : fill; ctx.lineWidth = (String(o.type).includes('haie') || String(o.libraryId).includes('haie')) ? 1.2 : (o.type === 'cote' ? 0.75 : 0.85); ctx.beginPath(); ctx.moveTo(o.x1, o.y1); ctx.lineTo(o.x2, o.y2); ctx.stroke(); if (o.type === 'cote') { drawLineDim({ x: o.x1, y: o.y1 }, { x: o.x2, y: o.y2 }); return; } label(o, (o.x1 + o.x2) / 2, (o.y1 + o.y2) / 2 - 8); if (showDims) drawLineDim({ x: o.x1, y: o.y1 }, { x: o.x2, y: o.y2 }); return; }
+  if (o.x1 !== undefined) {
+    ctx.strokeStyle = isSelected(o.id) ? '#ff7b00' : fill;
+    ctx.lineWidth = (String(o.type).includes('haie') || String(o.libraryId).includes('haie')) ? 1.2 : (o.type === 'cote' ? 0.75 : 0.85);
+    ctx.beginPath();
+    ctx.moveTo(o.x1, o.y1);
+    ctx.lineTo(o.x2, o.y2);
+    ctx.stroke();
+    if (o.type === 'cote') { drawLineDim({ x: o.x1, y: o.y1 }, { x: o.x2, y: o.y2 }); return; }
+    label(o, (o.x1 + o.x2) / 2, (o.y1 + o.y2) / 2 - 8);
+    if (showDims && o.type !== 'ligne') drawLineDim({ x: o.x1, y: o.y1 }, { x: o.x2, y: o.y2 });
+    return;
+  }
   if (o.r) { if (o.type === 'texte') { ctx.fillStyle = fill; ctx.font = 'bold 18px Arial'; ctx.textAlign = 'center'; ctx.fillText(o.name || 'Texte', o.x, o.y); return; } ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); label(o, o.x, o.y - o.r - 8); if (showDims) drawCircleDim(o); return; }
   if (o.shape === 'ellipse' || o.shape === 'circle' || (!o.shape && (o.type === 'eau' || o.type === 'piscine'))) { ctx.beginPath(); ctx.ellipse(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, o.h / 2, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); label(o, o.x + o.w / 2, o.y + o.h / 2); if (showDims) drawEllipseDims(o); return; }
   if (o.shape === 'rounded') { drawRoundRect(o.x, o.y, o.w, o.h, Math.min(o.w, o.h) * .15); ctx.fill(); ctx.stroke(); label(o, o.x + o.w / 2, o.y + o.h / 2); if (showDims) drawRectDims(o); return; }
@@ -1252,12 +1352,15 @@ function drawPolyDims(pts) {
   for (let i = 1; i < pts.length; i++) drawAlignedDimension(pts[i - 1], pts[i], 16);
   if (pts.length > 2) drawAlignedDimension(pts[pts.length - 1], pts[0], 16);
 }
+function drawOpenLineDims(pts) {
+  for (let i = 1; i < pts.length; i++) drawAlignedDimension(pts[i - 1], pts[i], 16);
+}
 
 function measure(o) {
   if (o.type === 'image') return 1;
   if (o.x1 !== undefined) return meters(Math.hypot(o.x2 - o.x1, o.y2 - o.y1) / majorGrid);
   if (o.r) return 1;
-  if (o.points) { const t = getTool(o.type); if ((o.shape === 'curve' || o.open) && !isSurfaceObject(o, t)) return meters(curveLengthPx(o.points) / majorGrid); let area = 0; const pts = o.points; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) area += (pts[j].x + pts[i].x) * (pts[j].y - pts[i].y); return meters(Math.abs(area / 2) / (majorGrid * majorGrid)); }
+  if (o.points) { const t = getTool(o.type); if (o.shape === 'polyline' || ((o.shape === 'curve' || o.open) && !isSurfaceObject(o, t))) return meters(curveLengthPx(o.points) / majorGrid); let area = 0; const pts = o.points; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) area += (pts[j].x + pts[i].x) * (pts[j].y - pts[i].y); return meters(Math.abs(area / 2) / (majorGrid * majorGrid)); }
   if (o.type === 'eau') return meters(Math.PI * (o.w / 2) * (o.h / 2) / (majorGrid * majorGrid));
   return meters((o.w * o.h) / (majorGrid * majorGrid));
 }
@@ -1885,6 +1988,18 @@ function add3D(scene, o, b) {
   }
 
   if (o.points) {
+    if (o.shape === 'polyline') {
+      ctx.strokeStyle = isSelected(o.id) ? '#ff7b00' : fill;
+      ctx.lineWidth = isSelected(o.id) ? 1.2 : 0.85;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      o.points.forEach((pt, i) => i ? ctx.lineTo(pt.x, pt.y) : ctx.moveTo(pt.x, pt.y));
+      ctx.stroke();
+      label(o, centroid(o.points).x, centroid(o.points).y - 8);
+      if (showDims && o.type !== 'polyligne') drawOpenLineDims(o.points);
+      return;
+    }
     if ((o.shape === 'curve' || o.open) && !isSurfaceObject(o, t)) {
       const thickness = Math.max(.06, Number(o.widthM || t.widthM || 0.25));
       const made = makeCurve3D(o.points, b, y, thickness);

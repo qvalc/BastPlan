@@ -80,7 +80,7 @@ button.active {
 .app-shell {
     display: grid;
     grid-template-columns: 210px minmax(550px, 1fr) 280px;
-    height: calc(100vh - 78px)
+    height: calc(100vh - 50px)
 }
 
 .left-panel,
@@ -707,4 +707,86 @@ footer {
     place-items: center;
     font-size: 20px;
     line-height: 1;
+}
+
+/* Palette d'outils façon Photofiltre */
+.tool-palette {
+    display: grid;
+    grid-template-columns: repeat(3, 40px);
+    gap: 7px;
+    margin: 8px 0 14px;
+    padding: 8px;
+    border-radius: 8px;
+    background: #111b22;
+    border: 1px solid rgba(255, 255, 255, .10);
+}
+
+.tool-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 5px;
+    background: #20313c;
+    color: #eef6ea;
+    border: 1px solid rgba(255, 255, 255, .14);
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.tool-icon:hover {
+    background: #29404f;
+}
+
+.tool-icon.active {
+    background: #4c8e31;
+    border-color: #70bd51;
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18);
+}
+
+.tool-icon[aria-label="Texte"] {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+}
+
+@media (max-width: 760px) {
+    .tool-palette {
+        grid-template-columns: repeat(3, 36px);
+    }
+
+    .tool-icon {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+    }
+}
+
+/* Nom du projet dans la barre du haut */
+.project-name-top {
+    width: 260px;
+    min-width: 220px;
+    max-width: 320px;
+    height: 38px;
+    padding: 0 12px;
+    margin: 0 2px 0 0;
+    border-radius: 8px;
+    background: #111b22;
+    color: #edf5eb;
+    border: 1px solid rgba(255, 255, 255, .16);
+    font-weight: 700;
+}
+
+.project-name-top::placeholder {
+    color: rgba(237, 245, 235, .62);
+}
+
+@media (max-width: 900px) {
+    .project-name-top {
+        width: 190px;
+        min-width: 160px;
+    }
 }
