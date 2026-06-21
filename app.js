@@ -1558,14 +1558,33 @@ function get3DImage() {
   try { return c ? c.toDataURL('image/png') : ''; } catch (e) { return ''; }
 }
 function preparePrint(kind) {
-  setPrintPage(); closePrintModal();
+  setPrintPage();
+  closePrintModal();
+
   const previousView = currentView;
   const planUrl = cropCanvasToObjects(canvas);
   const threeUrl = (kind === '3d' || kind === 'both') ? get3DImage() : '';
+
   printArea.innerHTML = '';
-  if (kind === '2d' || kind === 'both') printArea.insertAdjacentHTML('beforeend', `<section class="print-page"><h1>Plan 2D</h1><img src="${planUrl}" /></section>`);
-  if (kind === '3d' || kind === 'both') printArea.insertAdjacentHTML('beforeend', `<section class="print-page"><h1>Vue 3D</h1>${threeUrl ? `<img src="${threeUrl}" />` : '<p>La vue 3D n’a pas pu être générée.</p>'}</section>`);
-  setTimeout(() => { window.print(); setView(previousView); }, 150);
+
+  if (kind === '2d' || kind === 'both') {
+    printArea.insertAdjacentHTML(
+      'beforeend',
+      `<section class="print-page"><img src="${planUrl}" alt="Plan 2D" /></section>`
+    );
+  }
+
+  if (kind === '3d' || kind === 'both') {
+    printArea.insertAdjacentHTML(
+      'beforeend',
+      `<section class="print-page">${threeUrl ? `<img src="${threeUrl}" alt="Vue 3D" />` : '<p>La vue 3D n’a pas pu être générée.</p>'}</section>`
+    );
+  }
+
+  setTimeout(() => {
+    window.print();
+    setView(previousView);
+  }, 150);
 }
 
 function download(name, text) { downloadBlob(name, new Blob([text], { type: 'application/json' })); }
