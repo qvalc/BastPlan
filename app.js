@@ -39,6 +39,7 @@ const TEXTURE_SCALE_DEFAULT = 1;
 
 const toolDefs = [
   { id: 'select', label: 'Sélection / déplacement', mode: 'select' },
+  { id: 'image', label: 'Image importée', mode: 'rect', color: '#ffffff', unit: 'pc', h: 0.02, texture: '', source: 'system' },
   { id: 'terrain', label: 'Terrain', mode: 'rect', color: '#cbe8a7', unit: 'm²', h: 0.05, texture: 'pelouse' },
   { id: 'pelouse', label: 'Pelouse', mode: 'rect', color: '#7fcf63', unit: 'm²', h: 0.03, texture: 'pelouse' },
   { id: 'terrasse', label: 'Terrasse', mode: 'rect', color: '#c59b6b', unit: 'm²', h: 0.15, texture: 'bois' },
@@ -494,6 +495,115 @@ function updateTextureScaleControl() {
 }
 
 const textureImages = {};
+
+const importedImageCache = {};
+function getImportedImage(src) {
+  if (!src) return null;
+  if (importedImageCache[src]) return importedImageCache[src];
+
+  const img = new Image();
+  img.onload = () => draw();
+  img.src = src;
+  importedImageCache[src] = img;
+  return img;
+}
+
+function addImageFromFile(file) {
+  if (!file) return;
+  if (!file.type || !file.type.startsWith('image/')) {
+    alert('Choisis un fichier image valide.');
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    const dataUrl = String(reader.result || '');
+    const img = new Image();
+
+    img.onload = () => {
+      const maxWidthM = 5;
+      const maxDepthM = 3.5;
+      const aspect = (img.naturalWidth || img.width || 1) / Math.max(1, (img.naturalHeight || img.height || 1));
+
+      let widthM = maxWidthM;
+      let depthM = widthM / aspect;
+
+      if (depthM > maxDepthM) {
+        depthM = maxDepthM;
+        widthM = depthM * aspect;
+      }
+
+      const w = Math.max(majorGrid, widthM * majorGrid);
+      const h = Math.max(majorGrid, depthM * majorGrid);
+
+      addObject({
+        type: 'image',
+        shape: 'image',
+        name: '',
+        x: majorGrid,
+        y: majorGrid,
+        w,
+        h,
+        height: 0.02,
+        color: '#ffffff',
+        texture: '',
+        imageData: dataUrl,
+        imageMime: file.type,
+        imageFileName: file.name || 'image'
+      });
+
+      setActiveTool('select');
+    };
+
+    img.onerror = () => alert("L'image n'a pas pu être chargée.");
+    img.src = dataUrl;
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function drawImageObject(o) {
+  const img = getImportedImage(o.imageData);
+  const cx = o.x + o.w / 2;
+  const cy = o.y + o.h / 2;
+  const rot = ((Number(o.rot) || 0) * Math.PI) / 180;
+
+  ctx.save();
+
+  if (rot) {
+    ctx.translate(cx, cy);
+    ctx.rotate(rot);
+    ctx.translate(-cx, -cy);
+  }
+
+  if (img && img.complete && img.naturalWidth > 0) {
+    ctx.drawImage(img, o.x, o.y, o.w, o.h);
+  } else {
+    ctx.fillStyle = '#f4f4f4';
+    ctx.fillRect(o.x, o.y, o.w, o.h);
+    ctx.strokeStyle = '#999';
+    ctx.setLineDash([6, 4]);
+    ctx.strokeRect(o.x, o.y, o.w, o.h);
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Image', cx, cy);
+  }
+
+  ctx.restore();
+
+  ctx.save();
+  ctx.strokeStyle = isSelected(o.id) ? '#ff7b00' : 'rgba(38, 51, 40, 0.45)';
+  ctx.lineWidth = isSelected(o.id) ? 1.2 : 0.35;
+  ctx.strokeRect(o.x, o.y, o.w, o.h);
+  ctx.restore();
+
+  label(o, cx, cy);
+  if (showDims) drawRectDims(o);
+}
+
 function loadTextureAssets() {
   Object.entries(textureAssetPaths).forEach(([name, path]) => {
     const img = new Image();
@@ -1002,6 +1112,7 @@ function drawCurveDims(pts) {
   dimText(`${meters(curveLengthPx(pts) / majorGrid)} m`, mid.x, mid.y - 18, 0);
 }
 function drawObj(o) {
+  if (o.type === 'image') { drawImageObject(o); return; }
   const t = getTool(o.type); const fill = o.color || t.color; ctx.lineWidth = isSelected(o.id) ? 1.0 : 0.35; ctx.strokeStyle = isSelected(o.id) ? '#ff7b00' : '#263328'; ctx.fillStyle = patternFill(o, fill);
   if (o.points) {
     if ((o.shape === 'curve' || o.open) && !isSurfaceObject(o, t)) {
@@ -1143,6 +1254,7 @@ function drawPolyDims(pts) {
 }
 
 function measure(o) {
+  if (o.type === 'image') return 1;
   if (o.x1 !== undefined) return meters(Math.hypot(o.x2 - o.x1, o.y2 - o.y1) / majorGrid);
   if (o.r) return 1;
   if (o.points) { const t = getTool(o.type); if ((o.shape === 'curve' || o.open) && !isSurfaceObject(o, t)) return meters(curveLengthPx(o.points) / majorGrid); let area = 0; const pts = o.points; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) area += (pts[j].x + pts[i].x) * (pts[j].y - pts[i].y); return meters(Math.abs(area / 2) / (majorGrid * majorGrid)); }
@@ -1387,7 +1499,7 @@ document.getElementById('btnApplyProps').onclick = () => {
     updateProps(); draw(); saveLocal(); if (currentView !== '2d') build3D(); return;
   }
   const o = arr[0];
-  o.name = document.getElementById('propName').value || getTool(o.type).label; o.height = +document.getElementById('propHeight').value || 0; o.rot = +document.getElementById('propRot').value || 0; o.color = document.getElementById('propColor').value;
+  o.name = (document.getElementById('propName').value || '').trim(); o.height = +document.getElementById('propHeight').value || 0; o.rot = +document.getElementById('propRot').value || 0; o.color = document.getElementById('propColor').value;
   const texEl = document.getElementById('propTexture'); if (texEl) { if (texEl.value === '') delete o.texture; else { o.texture = texEl.value; if (o.textureScale === undefined) o.textureScale = TEXTURE_SCALE_DEFAULT; } }
   const scaleEl = document.getElementById('propTextureScale'); if (scaleEl) o.textureScale = normalizeTextureScale(scaleEl.value);
   setObjectSizeMeters(o, { width: document.getElementById('propW').value, depth: document.getElementById('propD').value, length: document.getElementById('propW').value, diameter: document.getElementById('propD').value }); draw(); saveLocal(); if (currentView !== '2d') build3D();
@@ -1401,6 +1513,10 @@ function redo() { if (!redoStack.length) return; historyStack.push(stateSnapshot
 document.getElementById('showDims').onchange = e => { showDims = e.target.checked; draw(); };
 document.getElementById('scaleSelect').onchange = e => { const [maj, snapv] = e.target.value.split('|').map(Number); majorGrid = maj; snapGrid = snapv; draw(); saveLocal(); };
 document.getElementById('btnClear').onclick = () => { if (confirm('Créer un nouveau plan ?')) { pushHistory(); objects = []; clearSelection(); draw(); saveLocal(); } };
+const imageImportInput = document.getElementById('imageImport');
+const btnAddImage = document.getElementById('btnAddImage');
+if (btnAddImage && imageImportInput) btnAddImage.onclick = () => imageImportInput.click();
+if (imageImportInput) imageImportInput.onchange = e => { const f = e.target.files && e.target.files[0]; addImageFromFile(f); imageImportInput.value = ''; };
 document.getElementById('btnSave').onclick = () => download('bastplan-paysage.json', JSON.stringify({ version: 15, majorGrid, snapGrid, planZoom, objects }, null, 2));
 document.getElementById('fileLoad').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { const data = JSON.parse(r.result); objects = data.objects || []; normalizeObjectTextureScales(); majorGrid = data.majorGrid || data.grid || 25; snapGrid = data.snapGrid || majorGrid; planZoom = clampZoom(Number(data.planZoom) || planZoom || 1); clearSelection(); setScaleSelect(); updateZoomControls(); applyPlanZoom(); draw(); saveLocal(); }; r.readAsText(f); };
 document.getElementById('btnExport').onclick = exportPNG;
@@ -1706,7 +1822,28 @@ function makeCurve3D(points, b, y, thickness) {
 }
 
 function add3D(scene, o, b) {
-  const t = getTool(o.type), mat = materialForObject3D(o, t);
+  const t = getTool(o.type);
+
+  if (o.type === 'image' && o.imageData) {
+    const loader = new THREE.TextureLoader();
+    const tex = loader.load(o.imageData);
+    tex.colorSpace = THREE.SRGBColorSpace || tex.colorSpace;
+    tex.anisotropy = 8;
+    const mat = new THREE.MeshBasicMaterial({
+      map: tex,
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+    const geo = new THREE.PlaneGeometry(Math.max(.1, o.w / majorGrid), Math.max(.1, o.h / majorGrid));
+    const m = new THREE.Mesh(geo, mat);
+    m.rotation.x = -Math.PI / 2;
+    m.rotation.z = -((Number(o.rot) || 0) * Math.PI / 180);
+    m.position.set(worldX(o.x + o.w / 2, b), 0.06, worldZ(o.y + o.h / 2, b));
+    scene.add(m);
+    return;
+  }
+
+  const mat = materialForObject3D(o, t);
   const hv = heightOf(o, t, 0);
   const water = isWaterLike(o);
   const h = water ? Math.max(0.035, Math.min(0.10, geomHeight(hv, .02))) : geomHeight(hv, .02);

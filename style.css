@@ -616,3 +616,8 @@ footer {
 .brand-logo {
     height: 46px;
 }
+
+/* Import d'image dans le plan */
+#imageImport {
+    display: none;
+}
