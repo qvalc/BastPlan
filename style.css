@@ -805,3 +805,362 @@ footer {
 .lib-swatch.with-symbol img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .lib-meta { line-height: 1.25; }
 .lib-category summary::after { content: attr(data-count); float: right; opacity: .65; font-weight: 600; }
+
+
+/* =========================================================
+   BastPlan - Correctif smartphone / tablette
+   Objectif : garder le plan utilisable sur petit écran,
+   avec panneaux Outils / Propriétés en tiroirs.
+   ========================================================= */
+
+.mobile-panel-tabs {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    body {
+        min-width: 0;
+        background: #0f171d;
+    }
+
+    .topbar {
+        height: auto;
+        min-height: 54px;
+        padding: 7px 8px;
+        gap: 7px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        position: sticky;
+        top: 0;
+        z-index: 120;
+    }
+
+    .brand {
+        flex: 0 0 auto;
+        min-height: 38px;
+        align-items: center;
+    }
+
+    .brand-logo {
+        height: 36px;
+    }
+
+    .brand strong {
+        font-size: 15px;
+    }
+
+    .top-actions {
+        flex: 1 1 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .project-name-top {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        height: 38px;
+    }
+
+    .top-actions .sep {
+        display: none;
+    }
+
+    .menu-trigger {
+        min-width: 0;
+        width: 100%;
+        height: 38px;
+        padding: 8px 6px;
+    }
+
+    .menu-content {
+        position: fixed;
+        top: 96px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        min-width: 0;
+        max-height: calc(100dvh - 160px);
+        overflow: auto;
+    }
+
+    .icon-btn {
+        width: 100%;
+        min-width: 0;
+        height: 38px;
+        font-size: 18px;
+    }
+
+    #btn2d,
+    #btn3d,
+    #btnSplit {
+        width: 100%;
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+
+    .app-shell {
+        display: block;
+        height: calc(100dvh - 106px);
+        min-height: 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .workspace {
+        position: absolute;
+        inset: 0;
+        padding: 8px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y;
+        background: #eef2ec;
+    }
+
+    #plan {
+        margin: 0;
+        max-width: none;
+        max-height: none;
+        touch-action: none;
+    }
+
+    #view3d {
+        height: calc(100dvh - 162px);
+    }
+
+    .split3d {
+        height: 260px !important;
+    }
+
+    .left-panel,
+    .right-panel {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        z-index: 250;
+        width: min(88vw, 360px);
+        max-width: 360px;
+        padding: calc(env(safe-area-inset-top) + 14px) 14px calc(env(safe-area-inset-bottom) + 78px);
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        box-shadow: 0 0 36px rgba(0,0,0,.45);
+        transition: transform .22s ease;
+    }
+
+    .left-panel {
+        left: 0;
+        border-right: 1px solid rgba(255,255,255,.12);
+        transform: translateX(-105%);
+    }
+
+    .right-panel {
+        right: 0;
+        border-left: 1px solid rgba(255,255,255,.12);
+        transform: translateX(105%);
+    }
+
+    body.mobile-left-open .left-panel {
+        transform: translateX(0);
+    }
+
+    body.mobile-right-open .right-panel {
+        transform: translateX(0);
+    }
+
+    body.mobile-left-open::before,
+    body.mobile-right-open::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 220;
+        background: rgba(0,0,0,.38);
+    }
+
+    .tool-palette {
+        grid-template-columns: repeat(5, 40px);
+        justify-content: start;
+    }
+
+    .tool-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .library-panel {
+        gap: 7px;
+    }
+
+    .lib-item {
+        min-height: 46px;
+        padding: 8px;
+    }
+
+    .lib-swatch {
+        width: 32px;
+        height: 32px;
+    }
+
+    input,
+    select,
+    textarea,
+    button,
+    .file-btn {
+        font-size: 16px;
+    }
+
+    label {
+        font-size: 12px;
+    }
+
+    .two-cols {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .zoom-controls {
+        position: fixed;
+        left: 8px;
+        right: 8px;
+        bottom: calc(env(safe-area-inset-bottom) + 62px);
+        z-index: 160;
+        width: auto;
+        max-width: none;
+        margin: 0;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 7px;
+        gap: 5px;
+    }
+
+    .zoom-controls label {
+        display: none;
+    }
+
+    .zoom-controls input[type="range"] {
+        flex: 1 1 150px;
+        min-width: 110px;
+        width: auto;
+    }
+
+    .zoom-controls input[type="number"] {
+        width: 58px;
+        font-size: 14px;
+    }
+
+    .zoom-controls button {
+        min-width: 34px;
+        padding: 6px 7px;
+        font-size: 12px;
+    }
+
+    .mobile-panel-tabs {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 300;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+        padding: 8px calc(env(safe-area-inset-right) + 8px) calc(env(safe-area-inset-bottom) + 8px) calc(env(safe-area-inset-left) + 8px);
+        background: rgba(15,23,29,.96);
+        border-top: 1px solid rgba(255,255,255,.12);
+        box-shadow: 0 -8px 24px rgba(0,0,0,.28);
+    }
+
+    .mobile-panel-tabs button {
+        height: 42px;
+        border-radius: 9px;
+        font-size: 13px;
+        padding: 8px 6px;
+    }
+
+    body.mobile-left-open .mobile-tab-left,
+    body.mobile-right-open .mobile-tab-right {
+        background: #4f9c31;
+    }
+
+    footer {
+        display: none;
+    }
+
+    .modal-box {
+        width: calc(100vw - 24px);
+        max-height: calc(100dvh - 24px);
+        overflow: auto;
+    }
+
+    .dim-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+
+    .context-menu {
+        position: fixed;
+        left: 8px !important;
+        right: 8px;
+        top: auto !important;
+        bottom: calc(env(safe-area-inset-bottom) + 64px);
+        min-width: 0;
+        width: auto;
+        max-height: 55dvh;
+        overflow: auto;
+    }
+}
+
+@media (max-width: 520px) {
+    .top-actions {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .top-actions > button,
+    .top-actions .menu-dropdown {
+        min-width: 0;
+    }
+
+    #btn2d,
+    #btn3d,
+    #btnSplit {
+        font-size: 10.5px;
+    }
+
+    .left-panel,
+    .right-panel {
+        width: 92vw;
+    }
+
+    .tool-palette {
+        grid-template-columns: repeat(4, 40px);
+    }
+
+    .object-drawer summary {
+        padding: 10px 9px;
+        font-size: 13px;
+    }
+
+    .lib-name {
+        font-size: 13px;
+    }
+
+    .lib-meta {
+        font-size: 11px;
+    }
+}
+
+@media (min-width: 901px) {
+    body.mobile-left-open .left-panel,
+    body.mobile-right-open .right-panel {
+        transform: none;
+    }
+}
+

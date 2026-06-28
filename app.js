@@ -9,9 +9,10 @@ const contextMenu = document.getElementById('contextMenu');
 
 let majorGrid = 5;       // taille VISUELLE fixe d'un grand carreau principal en pixels
 let snapGrid = 50;        // accrochage en pixels, calculé depuis la précision réelle
-let metersPerMajor = 1;   // échelle réelle : 1 grand carreau = X m
+const DEFAULT_METERS_PER_MAJOR = 0.1; // ouverture par défaut : 1 grand carreau = 10 cm
+let metersPerMajor = DEFAULT_METERS_PER_MAJOR;   // échelle réelle : 1 grand carreau = X m
 let gridStyle = 'squared5'; // squared5 | millimeter | simple | none
-let snapPrecisionM = 1;
+let snapPrecisionM = DEFAULT_METERS_PER_MAJOR;
 let objects = [];
 let selectedId = null;
 let selectedIds = [];
@@ -631,16 +632,18 @@ function compatibleTextureKeys(o, t) {
   let keys = textureFamilies[base] || (base ? [base] : []);
   const label = ((o && o.name) || (t && t.label) || '').toLowerCase();
   const type = String((o && o.type) || (t && t.id) || '').toLowerCase();
+  const category = String((o && o.category) || (t && t.category) || '').toLowerCase();
+  const haystack = `${label} ${type} ${category}`;
   const isCurve = !!(o && (o.shape === 'curve' || o.open)) || (t && t.mode === 'curve');
 
-  if (type === 'pelouse' || label.includes('pelouse') || label.includes('gazon')) keys = textureFamilies.pelouse || keys;
-  if (type === 'gravier' || label.includes('gravier') || label.includes('dolomie')) keys = textureFamilies.gravier || keys;
-  if (type === 'allee' || label.includes('pavé') || label.includes('paves') || label.includes('allée')) keys = textureFamilies.paves || keys;
-  if (type === 'terrasse' || label.includes('terrasse') || label.includes('bois')) keys = textureFamilies.bois || keys;
-  if (type === 'massif' || label.includes('massif') || label.includes('terre') || label.includes('paillage')) keys = textureFamilies.massif || textureFamilies.terre || keys;
-  if (type === 'eau' || type === 'piscine' || label.includes('piscine') || label.includes('bassin') || label.includes('eau')) keys = textureFamilies.eau || keys;
-  if (type === 'haie' || label.includes('haie') || label.includes('arbuste') || label.includes('arbre')) keys = textureFamilies.haie_dense || keys;
-  if (type === 'cloture' || label.includes('clôture') || label.includes('cloture')) keys = textureFamilies.cloture || keys;
+  if (type === 'pelouse' || haystack.includes('pelouse') || haystack.includes('gazon') || haystack.includes('prairie')) keys = textureFamilies.pelouse || keys;
+  if (type === 'gravier' || haystack.includes('gravier') || haystack.includes('dolomie') || haystack.includes('galet') || haystack.includes('concass')) keys = textureFamilies.gravier || keys;
+  if (type === 'allee' || haystack.includes('pavé') || haystack.includes('paves') || haystack.includes('allée') || haystack.includes('dalle') || haystack.includes('béton') || haystack.includes('beton') || haystack.includes('enrob')) keys = textureFamilies.paves || keys;
+  if (type === 'terrasse' || haystack.includes('terrasse') || haystack.includes('bois') || haystack.includes('composite')) keys = textureFamilies.bois || keys;
+  if (type === 'massif' || haystack.includes('massif') || haystack.includes('terre') || haystack.includes('paillage') || haystack.includes('écorce') || haystack.includes('ecorce') || haystack.includes('fleur') || haystack.includes('gramin')) keys = textureFamilies.massif || textureFamilies.terre || keys;
+  if (type === 'eau' || type === 'piscine' || haystack.includes('piscine') || haystack.includes('bassin') || haystack.includes('eau')) keys = textureFamilies.eau || keys;
+  if (type === 'haie' || type === 'arbre' || type === 'arbuste' || haystack.includes('haie') || haystack.includes('arbuste') || haystack.includes('arbre') || haystack.includes('végétation') || haystack.includes('vegetation')) keys = textureFamilies.haie_dense || keys;
+  if (type === 'cloture' || haystack.includes('clôture') || haystack.includes('cloture') || haystack.includes('portail') || haystack.includes('gabion')) keys = textureFamilies.cloture || keys;
 
   if (isCurve && !keys.length) {
     keys = ['pelouse', 'pelouse_fine', 'pelouse_dense', 'pelouse_seche', 'pelouse_ombre', 'prairie', 'prairie_sauvage', 'gazon_synthetique', 'gravier', 'gravier_blanc', 'gravier_jaune', 'gravier_noir', 'gravier_rouge', 'gravier_bleu', 'dolomie', 'concasse', 'galets', 'ecorce', 'ecorce_claire', 'copeaux', 'paillage', 'paves', 'paves_clairs', 'paves_fonces', 'paves_kandla', 'paves_rouges', 'paves_beton', 'dalles', 'dalles_claires', 'dalles_grandes', 'opus', 'beton_lisse', 'beton_desactive', 'enrobe', 'bois', 'bois_clair', 'bois_fonce', 'composite_gris', 'composite_brun', 'pierre', 'ardoise', 'schiste', 'brique', 'terre', 'terre_foncee', 'sable', 'eau', 'eau_naturelle', 'eau_foncee', 'haie_dense', 'haie_fine', 'haie_feuillu', 'haie_rouge', 'haie_sombre', 'conifere', 'arbre', 'arbre_fleuri', 'arbuste', 'fleurs', 'massif', 'graminees', 'maison', 'verre', 'metal', 'cloture'];
@@ -651,20 +654,34 @@ function compatibleTextureKeys(o, t) {
 function populateTextureSelectForSelection() {
   const texEl = document.getElementById('propTexture');
   if (!texEl) return;
+
   const arr = selectedObjects();
-  if (!arr.length) { texEl.innerHTML = '<option value="">Pas de texture</option>'; texEl.disabled = true; return; }
-  texEl.disabled = false;
-  const first = arr[0], t = getTool(first.type);
-  // BastPlan PRO : le menu Texture affiche toutes les textures disponibles.
-  // Les textures compatibles avec l'objet restent en premier, puis les autres suivent.
-  const preferredKeys = compatibleTextureKeys(first, t);
-  const allKeys = Object.keys(textureLabels || textureAssetPaths || texturePatterns || {}).filter(Boolean);
-  let keys = [...new Set([...preferredKeys, ...allKeys])];
-  if (arr.length > 1) {
-    const common = preferredKeys.filter(k => arr.every(o => compatibleTextureKeys(o, getTool(o.type)).includes(k)));
-    keys = [...new Set([...common, ...allKeys])];
+  if (!arr.length) {
+    texEl.innerHTML = '<option value="">Pas de texture</option>';
+    texEl.disabled = true;
+    return;
   }
-  const current = arr.length === 1 ? ((first.texture && first.texture !== NO_TEXTURE) ? first.texture : '') : (arr.every(o => ((o.texture && o.texture !== NO_TEXTURE) ? o.texture : '') === ((first.texture && first.texture !== NO_TEXTURE) ? first.texture : '')) ? ((first.texture && first.texture !== NO_TEXTURE) ? first.texture : '') : '');
+
+  texEl.disabled = false;
+
+  // Le menu ne montre plus toutes les textures du logiciel.
+  // Il ne montre que les textures compatibles avec l’objet sélectionné :
+  // pelouse => textures pelouse, gravier => textures gravier, pavés => textures pavés, etc.
+  let keys = compatibleTextureKeys(arr[0], getTool(arr[0].type));
+
+  if (arr.length > 1) {
+    keys = keys.filter(k => arr.every(o => compatibleTextureKeys(o, getTool(o.type)).includes(k)));
+  }
+
+  keys = [...new Set(keys.filter(k => textureLabels[k] || textureAssetPaths[k] || texturePatterns[k]))];
+
+  const firstTexture = (arr[0].texture && arr[0].texture !== NO_TEXTURE) ? arr[0].texture : '';
+  const sameTexture = arr.every(o => {
+    const tex = (o.texture && o.texture !== NO_TEXTURE) ? o.texture : '';
+    return tex === firstTexture;
+  });
+  const current = sameTexture && keys.includes(firstTexture) ? firstTexture : '';
+
   texEl.innerHTML = [
     '<option value="">Pas de texture</option>',
     ...keys.map(k => `<option value="${k}">${textureLabels[k] || k}</option>`)
@@ -1948,7 +1965,17 @@ if (legacyScaleSelect) {
     saveLocal();
   };
 }
-document.getElementById('btnClear').onclick = () => { if (confirm('Créer un nouveau plan ?')) { pushHistory(); objects = []; clearSelection(); draw(); saveLocal(); } };
+document.getElementById('btnClear').onclick = () => {
+  if (confirm('Créer un nouveau plan ?')) {
+    pushHistory();
+    objects = [];
+    clearSelection();
+    restoreScaleData({});
+    setScaleControls();
+    draw();
+    saveLocal();
+  }
+};
 const imageImportInput = document.getElementById('imageImport');
 const btnAddImage = document.getElementById('btnAddImage');
 if (btnAddImage && imageImportInput) btnAddImage.onclick = () => imageImportInput.click();
@@ -2044,7 +2071,7 @@ function restoreScaleData(d = {}) {
   const hasNewScale = d.metersPerMajor !== undefined;
 
   majorGrid = fixedGrid;
-  metersPerMajor = hasNewScale ? Math.max(0.01, Number(d.metersPerMajor) || 1) : 1;
+  metersPerMajor = hasNewScale ? Math.max(0.01, Number(d.metersPerMajor) || DEFAULT_METERS_PER_MAJOR) : DEFAULT_METERS_PER_MAJOR;
   gridStyle = ['squared5', 'millimeter', 'simple', 'none'].includes(d.gridStyle) ? d.gridStyle : 'squared5';
 
   if (!hasNewScale && objects.length && oldMajorGrid && oldMajorGrid !== fixedGrid) {
@@ -2052,9 +2079,9 @@ function restoreScaleData(d = {}) {
     objects.forEach(o => scaleObjectCoordinates(o, ratio));
   }
 
-  if (d.snapPrecisionM !== undefined) snapPrecisionM = Math.max(0.01, Number(d.snapPrecisionM) || 1);
+  if (d.snapPrecisionM !== undefined) snapPrecisionM = Math.max(0.01, Number(d.snapPrecisionM) || DEFAULT_METERS_PER_MAJOR);
   else if (d.snapGrid !== undefined) snapPrecisionM = Math.max(0.01, Number(d.snapGrid) / Math.max(1, oldMajorGrid));
-  else snapPrecisionM = 1;
+  else snapPrecisionM = DEFAULT_METERS_PER_MAJOR;
 
   snapGrid = Math.max(0.25, toPx(snapPrecisionM));
 }
@@ -2459,5 +2486,98 @@ function buildCanvas3D() {
   const b = bounds(), cx = rect.width / 2, cy = rect.height * .7; const iso = (x, y, z = 0) => ({ x: cx + (worldX(x, b) - worldZ(y, b)) * 18, y: cy + (worldX(x, b) + worldZ(y, b)) * 9 - z * 22 });
   objects.forEach(o => { const t = getTool(o.type); g.fillStyle = t.color; g.strokeStyle = '#253'; if (o.x1 !== undefined) { const p1 = iso(o.x1, o.y1, 0), p2 = iso(o.x2, o.y2, 0), p3 = iso(o.x2, o.y2, heightOf(o, t, .02)), p4 = iso(o.x1, o.y1, heightOf(o, t, .02)); g.beginPath(); g.moveTo(p1.x, p1.y); g.lineTo(p2.x, p2.y); g.lineTo(p3.x, p3.y); g.lineTo(p4.x, p4.y); g.closePath(); g.fill(); g.stroke(); } else if (o.r) { const p = iso(o.x, o.y, heightOf(o, t, .02)); g.beginPath(); g.arc(p.x, p.y, Math.max(8, toM(o.r) * 10), 0, Math.PI * 2); g.fill(); g.stroke(); } else { const h = heightOf(o, t, .02), x = o.x || centroid(o.points || []).x, y = o.y || centroid(o.points || []).y, w = o.w || majorGrid, hh = o.h || majorGrid; const p = iso(x + w / 2, y + hh / 2, h); g.fillRect(p.x - 16, p.y - 16, 32, 32); g.strokeRect(p.x - 16, p.y - 16, 32, 32); } });
 }
+
+
+
+/* =========================================================
+   BastPlan - Navigation smartphone
+   Ajoute une barre en bas : Outils / Plan / Propriétés.
+   Ne change pas le fonctionnement desktop.
+   ========================================================= */
+(function initMobilePanels() {
+  const MOBILE_MAX = 900;
+
+  function isMobileLayout() {
+    return window.matchMedia && window.matchMedia('(max-width: ' + MOBILE_MAX + 'px)').matches;
+  }
+
+  function closeMobilePanels() {
+    document.body.classList.remove('mobile-left-open', 'mobile-right-open');
+  }
+
+  function openMobilePanel(side) {
+    if (!isMobileLayout()) return;
+    document.body.classList.remove('mobile-left-open', 'mobile-right-open');
+    if (side === 'left') document.body.classList.add('mobile-left-open');
+    if (side === 'right') document.body.classList.add('mobile-right-open');
+  }
+
+  function ensureTabs() {
+    if (document.getElementById('mobilePanelTabs')) return;
+
+    const tabs = document.createElement('div');
+    tabs.id = 'mobilePanelTabs';
+    tabs.className = 'mobile-panel-tabs';
+    tabs.innerHTML = [
+      '<button type="button" class="mobile-tab-left" aria-label="Ouvrir les outils">☰ Outils</button>',
+      '<button type="button" class="mobile-tab-plan" aria-label="Afficher le plan">▣ Plan</button>',
+      '<button type="button" class="mobile-tab-right" aria-label="Ouvrir les propriétés">⚙ Propriétés</button>'
+    ].join('');
+
+    document.body.appendChild(tabs);
+
+    tabs.querySelector('.mobile-tab-left').addEventListener('click', function () {
+      if (document.body.classList.contains('mobile-left-open')) closeMobilePanels();
+      else openMobilePanel('left');
+    });
+
+    tabs.querySelector('.mobile-tab-right').addEventListener('click', function () {
+      if (document.body.classList.contains('mobile-right-open')) closeMobilePanels();
+      else openMobilePanel('right');
+    });
+
+    tabs.querySelector('.mobile-tab-plan').addEventListener('click', closeMobilePanels);
+  }
+
+  function bindMobileCloseEvents() {
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeMobilePanels();
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!isMobileLayout()) return;
+
+      const left = document.querySelector('.left-panel');
+      const right = document.querySelector('.right-panel');
+      const tabs = document.getElementById('mobilePanelTabs');
+
+      if ((document.body.classList.contains('mobile-left-open') || document.body.classList.contains('mobile-right-open')) &&
+          !event.target.closest('.left-panel') &&
+          !event.target.closest('.right-panel') &&
+          !event.target.closest('.mobile-panel-tabs')) {
+        closeMobilePanels();
+        return;
+      }
+
+      if (event.target.closest('.lib-item') || event.target.closest('.tool') || event.target.closest('.tool-icon')) {
+        setTimeout(closeMobilePanels, 80);
+      }
+    }, true);
+
+    window.addEventListener('resize', function () {
+      if (!isMobileLayout()) closeMobilePanels();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      ensureTabs();
+      bindMobileCloseEvents();
+    });
+  } else {
+    ensureTabs();
+    bindMobileCloseEvents();
+  }
+})();
 
 loadTextureAssets(); loadLocal(); setScaleControls(); initTools(); initZoomControls(); draw();
