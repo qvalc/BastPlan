@@ -1,0 +1,2700 @@
+// Bibliothèque paysagère PRO générée pour BastPlan
+window.BASTPLAN_PRO_LIBRARY_ITEMS = [
+  {
+    "id": "pro_sols_terrain_naturel",
+    "label": "Terrain naturel",
+    "category": "Sols / préparation",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "terre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/sols/pro_sols_terrain_naturel.svg",
+    "model3d": "assets/models3d/sols/pro_sols_terrain_naturel.json",
+    "symbolChar": "▧",
+    "source": "library"
+  },
+  {
+    "id": "pro_sols_terre_vegetale",
+    "label": "Terre végétale",
+    "category": "Sols / préparation",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "terre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/sols/pro_sols_terre_vegetale.svg",
+    "model3d": "assets/models3d/sols/pro_sols_terre_vegetale.json",
+    "symbolChar": "▧",
+    "source": "library"
+  },
+  {
+    "id": "pro_sols_terre_nivelee",
+    "label": "Terre nivelée",
+    "category": "Sols / préparation",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "terre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/sols/pro_sols_terre_nivelee.svg",
+    "model3d": "assets/models3d/sols/pro_sols_terre_nivelee.json",
+    "symbolChar": "▧",
+    "source": "library"
+  },
+  {
+    "id": "pro_sols_talus",
+    "label": "Talus",
+    "category": "Sols / préparation",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "terre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/sols/pro_sols_talus.svg",
+    "model3d": "assets/models3d/sols/pro_sols_talus.json",
+    "symbolChar": "▧",
+    "source": "library"
+  },
+  {
+    "id": "pro_sols_butte",
+    "label": "Butte",
+    "category": "Sols / préparation",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "terre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/sols/pro_sols_butte.svg",
+    "model3d": "assets/models3d/sols/pro_sols_butte.json",
+    "symbolChar": "▧",
+    "source": "library"
+  },
+  {
+    "id": "pro_sols_sable",
+    "label": "Sable",
+    "category": "Sols / préparation",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "terre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/sols/pro_sols_sable.svg",
+    "model3d": "assets/models3d/sols/pro_sols_sable.json",
+    "symbolChar": "▧",
+    "source": "library"
+  },
+  {
+    "id": "pro_sols_stabilise",
+    "label": "Stabilisé",
+    "category": "Sols / préparation",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "terre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/sols/pro_sols_stabilise.svg",
+    "model3d": "assets/models3d/sols/pro_sols_stabilise.json",
+    "symbolChar": "▧",
+    "source": "library"
+  },
+  {
+    "id": "pro_sols_fondation_terrasse",
+    "label": "Fondation terrasse",
+    "category": "Sols / préparation",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "terre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/sols/pro_sols_fondation_terrasse.svg",
+    "model3d": "assets/models3d/sols/pro_sols_fondation_terrasse.json",
+    "symbolChar": "▧",
+    "source": "library"
+  },
+  {
+    "id": "pro_sols_zone_chantier",
+    "label": "Zone chantier",
+    "category": "Sols / préparation",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "terre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/sols/pro_sols_zone_chantier.svg",
+    "model3d": "assets/models3d/sols/pro_sols_zone_chantier.json",
+    "symbolChar": "▧",
+    "source": "library"
+  },
+  {
+    "id": "pro_sols_zone_drainante",
+    "label": "Zone drainante",
+    "category": "Sols / préparation",
+    "mode": "rect",
+    "color": "#8a5c32",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "terre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/sols/pro_sols_zone_drainante.svg",
+    "model3d": "assets/models3d/sols/pro_sols_zone_drainante.json",
+    "symbolChar": "▧",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_pelouse_standard",
+    "label": "Pelouse standard",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "pelouse",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_pelouse_standard.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_pelouse_standard.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_pelouse_fine",
+    "label": "Pelouse fine",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "pelouse_fine",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_pelouse_fine.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_pelouse_fine.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_pelouse_ombragee",
+    "label": "Pelouse ombragée",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "pelouse_ombre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_pelouse_ombragee.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_pelouse_ombragee.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_prairie_fleurie",
+    "label": "Prairie fleurie",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "fleurs",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_prairie_fleurie.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_prairie_fleurie.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_gazon_synthetique",
+    "label": "Gazon synthétique",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "paves",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_gazon_synthetique.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_gazon_synthetique.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_gravier_gris",
+    "label": "Gravier gris",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "gravier",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_gravier_gris.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_gravier_gris.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_gravier_blanc",
+    "label": "Gravier blanc",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "gravier_blanc",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_gravier_blanc.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_gravier_blanc.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_gravier_jaune",
+    "label": "Gravier jaune",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "gravier_jaune",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_gravier_jaune.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_gravier_jaune.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_dolomie",
+    "label": "Dolomie",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "dolomie",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_dolomie.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_dolomie.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_concasse_calcaire",
+    "label": "Concassé calcaire",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "concasse",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_concasse_calcaire.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_concasse_calcaire.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_galets_decoratifs",
+    "label": "Galets décoratifs",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "haie_sombre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_galets_decoratifs.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_galets_decoratifs.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_ecorces",
+    "label": "Écorces",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "ecorce",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_ecorces.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_ecorces.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_paillage_bois",
+    "label": "Paillage bois",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "bois",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_paillage_bois.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_paillage_bois.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_paves_beton",
+    "label": "Pavés béton",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "beton_lisse",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_paves_beton.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_paves_beton.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_paves_vieillis",
+    "label": "Pavés vieillis",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "paves",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_paves_vieillis.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_paves_vieillis.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_klinkers_rouges",
+    "label": "Klinkers rouges",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "paves_rouges",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_klinkers_rouges.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_klinkers_rouges.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_dalles_beton",
+    "label": "Dalles béton",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "beton_lisse",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_dalles_beton.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_dalles_beton.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_dalles_60x60",
+    "label": "Dalles 60x60",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "dalles",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_dalles_60x60.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_dalles_60x60.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_opus_incertum",
+    "label": "Opus incertum",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "paves",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_opus_incertum.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_opus_incertum.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_beton_desactive",
+    "label": "Béton désactivé",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "beton_desactive",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_beton_desactive.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_beton_desactive.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_enrobe",
+    "label": "Enrobé",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "enrobe",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_enrobe.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_enrobe.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_pierre_bleue",
+    "label": "Pierre bleue",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "pierre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_pierre_bleue.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_pierre_bleue.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_revetements_ardoise",
+    "label": "Ardoise",
+    "category": "Revêtements / surfaces",
+    "mode": "rect",
+    "color": "#b9b9b9",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "ardoise",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/revetements/pro_revetements_ardoise.svg",
+    "model3d": "assets/models3d/revetements/pro_revetements_ardoise.json",
+    "symbolChar": "▦",
+    "source": "library"
+  },
+  {
+    "id": "pro_terrasses_terrasse_bois",
+    "label": "Terrasse bois",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#9a6437",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "bois",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/terrasses/pro_terrasses_terrasse_bois.svg",
+    "model3d": "assets/models3d/terrasses/pro_terrasses_terrasse_bois.json",
+    "symbolChar": "▤",
+    "source": "library"
+  },
+  {
+    "id": "pro_terrasses_terrasse_bois_clair",
+    "label": "Terrasse bois clair",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#9a6437",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "bois_clair",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/terrasses/pro_terrasses_terrasse_bois_clair.svg",
+    "model3d": "assets/models3d/terrasses/pro_terrasses_terrasse_bois_clair.json",
+    "symbolChar": "▤",
+    "source": "library"
+  },
+  {
+    "id": "pro_terrasses_terrasse_bois_fonce",
+    "label": "Terrasse bois foncé",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#9a6437",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "bois_fonce",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/terrasses/pro_terrasses_terrasse_bois_fonce.svg",
+    "model3d": "assets/models3d/terrasses/pro_terrasses_terrasse_bois_fonce.json",
+    "symbolChar": "▤",
+    "source": "library"
+  },
+  {
+    "id": "pro_terrasses_terrasse_composite_gris",
+    "label": "Terrasse composite gris",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#9a6437",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "composite_gris",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/terrasses/pro_terrasses_terrasse_composite_gris.svg",
+    "model3d": "assets/models3d/terrasses/pro_terrasses_terrasse_composite_gris.json",
+    "symbolChar": "▤",
+    "source": "library"
+  },
+  {
+    "id": "pro_terrasses_terrasse_composite_brun",
+    "label": "Terrasse composite brun",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#9a6437",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "composite_brun",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/terrasses/pro_terrasses_terrasse_composite_brun.svg",
+    "model3d": "assets/models3d/terrasses/pro_terrasses_terrasse_composite_brun.json",
+    "symbolChar": "▤",
+    "source": "library"
+  },
+  {
+    "id": "pro_terrasses_terrasse_dalle_gres",
+    "label": "Terrasse dalle grès",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#9a6437",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "bois",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/terrasses/pro_terrasses_terrasse_dalle_gres.svg",
+    "model3d": "assets/models3d/terrasses/pro_terrasses_terrasse_dalle_gres.json",
+    "symbolChar": "▤",
+    "source": "library"
+  },
+  {
+    "id": "pro_terrasses_terrasse_pierre",
+    "label": "Terrasse pierre",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#9a6437",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "pierre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/terrasses/pro_terrasses_terrasse_pierre.svg",
+    "model3d": "assets/models3d/terrasses/pro_terrasses_terrasse_pierre.json",
+    "symbolChar": "▤",
+    "source": "library"
+  },
+  {
+    "id": "pro_terrasses_platelage_piscine",
+    "label": "Platelage piscine",
+    "category": "Terrasses",
+    "mode": "rect",
+    "color": "#9a6437",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/terrasses/pro_terrasses_platelage_piscine.svg",
+    "model3d": "assets/models3d/terrasses/pro_terrasses_platelage_piscine.json",
+    "symbolChar": "▤",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_haies_haie_laurier_palme",
+    "label": "Haie laurier palme",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "haie_dense",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_laurier_palme.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_laurier_palme.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_laurier_portugal",
+    "label": "Haie laurier Portugal",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "haie_dense",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_laurier_portugal.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_laurier_portugal.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_hetre",
+    "label": "Haie hêtre",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "haie_feuillu",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_hetre.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_hetre.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_charme",
+    "label": "Haie charme",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "haie_feuillu",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_charme.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_charme.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_troene",
+    "label": "Haie troène",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "haie_dense",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_troene.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_troene.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_photinia",
+    "label": "Haie photinia",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "haie_rouge",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_photinia.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_photinia.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_if",
+    "label": "Haie if",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "haie_sombre",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_if.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_if.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_thuya",
+    "label": "Haie thuya",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "conifere",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_thuya.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_thuya.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_cypres",
+    "label": "Haie cyprès",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "conifere",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_cypres.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_cypres.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_bambou",
+    "label": "Haie bambou",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "haie_dense",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_bambou.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_bambou.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_mixte",
+    "label": "Haie mixte",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "haie_dense",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_mixte.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_mixte.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_haies_haie_basse",
+    "label": "Haie basse",
+    "category": "Végétation / Haies",
+    "mode": "line",
+    "color": "#2f7d32",
+    "unit": "m",
+    "h": 1.8,
+    "texture": "haie_dense",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_haies/pro_vegetation_haies_haie_basse.svg",
+    "model3d": "assets/models3d/vegetation_haies/pro_vegetation_haies_haie_basse.json",
+    "symbolChar": "▥",
+    "source": "library",
+    "widthM": 0.55
+  },
+  {
+    "id": "pro_vegetation_arbres_chene",
+    "label": "Chêne",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_chene.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_chene.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_erable",
+    "label": "Érable",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_erable.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_erable.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_bouleau",
+    "label": "Bouleau",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_bouleau.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_bouleau.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_saule",
+    "label": "Saule",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_saule.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_saule.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_tilleul",
+    "label": "Tilleul",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_tilleul.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_tilleul.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_arbre_fruitier",
+    "label": "Arbre fruitier",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_arbre_fruitier.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_arbre_fruitier.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_pommier",
+    "label": "Pommier",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_pommier.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_pommier.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_cerisier",
+    "label": "Cerisier",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_cerisier.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_cerisier.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_olivier",
+    "label": "Olivier",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_olivier.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_olivier.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_palmier",
+    "label": "Palmier",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_palmier.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_palmier.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_conifere",
+    "label": "Conifère",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_conifere.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_conifere.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_sapin",
+    "label": "Sapin",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "conifere",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_sapin.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_sapin.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_pin",
+    "label": "Pin",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "conifere",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_pin.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_pin.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_cypres_isole",
+    "label": "Cyprès isolé",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "conifere",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_cypres_isole.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_cypres_isole.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_arbre_ornemental",
+    "label": "Arbre ornemental",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_arbre_ornemental.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_arbre_ornemental.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_magnolia",
+    "label": "Magnolia",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre_fleuri",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_magnolia.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_magnolia.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_albizia",
+    "label": "Albizia",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre_fleuri",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_albizia.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_albizia.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbres_acer_japonais",
+    "label": "Acer japonais",
+    "category": "Végétation / Arbres",
+    "mode": "point",
+    "color": "#257a35",
+    "unit": "pc",
+    "h": 5,
+    "texture": "arbre",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbres/pro_vegetation_arbres_acer_japonais.svg",
+    "model3d": "assets/models3d/vegetation_arbres/pro_vegetation_arbres_acer_japonais.json",
+    "symbolChar": "🌳",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_arbuste_persistant",
+    "label": "Arbuste persistant",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "arbuste",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_arbuste_persistant.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_arbuste_persistant.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_arbuste_fleuri",
+    "label": "Arbuste fleuri",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "fleurs",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_arbuste_fleuri.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_arbuste_fleuri.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_hortensia",
+    "label": "Hortensia",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "arbuste",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_hortensia.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_hortensia.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_lavande",
+    "label": "Lavande",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "arbuste",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_lavande.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_lavande.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_buis",
+    "label": "Buis",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "arbuste",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_buis.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_buis.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_rhododendron",
+    "label": "Rhododendron",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "arbuste",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_rhododendron.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_rhododendron.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_rosier",
+    "label": "Rosier",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "arbuste",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_rosier.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_rosier.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_graminee",
+    "label": "Graminée",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "graminees",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_graminee.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_graminee.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_miscanthus",
+    "label": "Miscanthus",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "arbuste",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_miscanthus.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_miscanthus.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_bambou_isole",
+    "label": "Bambou isolé",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "arbuste",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_bambou_isole.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_bambou_isole.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_massif_vivaces",
+    "label": "Massif vivaces",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "massif",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_massif_vivaces.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_massif_vivaces.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_massif_fleuri",
+    "label": "Massif fleuri",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "massif",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_massif_fleuri.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_massif_fleuri.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_potager",
+    "label": "Potager",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "bois",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_potager.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_potager.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_vegetation_arbustes_bac_potager",
+    "label": "Bac potager",
+    "category": "Végétation / Arbustes et massifs",
+    "mode": "point",
+    "color": "#4e9f43",
+    "unit": "pc",
+    "h": 0.08,
+    "texture": "bois",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/vegetation_arbustes/pro_vegetation_arbustes_bac_potager.svg",
+    "model3d": "assets/models3d/vegetation_arbustes/pro_vegetation_arbustes_bac_potager.json",
+    "symbolChar": "🌿",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_plan_d_eau_naturel",
+    "label": "Plan d’eau naturel",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_plan_d_eau_naturel.svg",
+    "model3d": "assets/models3d/eau/pro_eau_plan_d_eau_naturel.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_bassin_decoratif",
+    "label": "Bassin décoratif",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_bassin_decoratif.svg",
+    "model3d": "assets/models3d/eau/pro_eau_bassin_decoratif.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_mare",
+    "label": "Mare",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau_foncee",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_mare.svg",
+    "model3d": "assets/models3d/eau/pro_eau_mare.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_etang",
+    "label": "Étang",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau_foncee",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_etang.svg",
+    "model3d": "assets/models3d/eau/pro_eau_etang.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_ruisseau",
+    "label": "Ruisseau",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_ruisseau.svg",
+    "model3d": "assets/models3d/eau/pro_eau_ruisseau.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_cascade",
+    "label": "Cascade",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_cascade.svg",
+    "model3d": "assets/models3d/eau/pro_eau_cascade.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_fontaine",
+    "label": "Fontaine",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_fontaine.svg",
+    "model3d": "assets/models3d/eau/pro_eau_fontaine.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_piscine_rectangulaire",
+    "label": "Piscine rectangulaire",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_piscine_rectangulaire.svg",
+    "model3d": "assets/models3d/eau/pro_eau_piscine_rectangulaire.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_piscine_ronde",
+    "label": "Piscine ronde",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_piscine_ronde.svg",
+    "model3d": "assets/models3d/eau/pro_eau_piscine_ronde.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_piscine_haricot",
+    "label": "Piscine haricot",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_piscine_haricot.svg",
+    "model3d": "assets/models3d/eau/pro_eau_piscine_haricot.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_jacuzzi",
+    "label": "Jacuzzi",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_jacuzzi.svg",
+    "model3d": "assets/models3d/eau/pro_eau_jacuzzi.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_eau_plage_piscine",
+    "label": "Plage piscine",
+    "category": "Eau / piscines",
+    "mode": "ellipse",
+    "color": "#55b9df",
+    "unit": "m²",
+    "h": 0.08,
+    "texture": "eau",
+    "shapes": [
+      "ellipse",
+      "circle",
+      "rectangle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/eau/pro_eau_plage_piscine.svg",
+    "model3d": "assets/models3d/eau/pro_eau_plage_piscine.json",
+    "symbolChar": "≈",
+    "source": "library"
+  },
+  {
+    "id": "pro_clotures_cloture_rigide",
+    "label": "Clôture rigide",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "cloture",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_cloture_rigide.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_cloture_rigide.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_cloture_souple",
+    "label": "Clôture souple",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "cloture",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_cloture_souple.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_cloture_souple.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_palissade_bois",
+    "label": "Palissade bois",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_palissade_bois.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_palissade_bois.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_panneau_composite",
+    "label": "Panneau composite",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "composite_brun",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_panneau_composite.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_panneau_composite.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_gabions",
+    "label": "Gabions",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "pierre",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_gabions.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_gabions.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_mur_de_soutenement",
+    "label": "Mur de soutènement",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "pierre",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_mur_de_soutenement.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_mur_de_soutenement.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_mur_pierre",
+    "label": "Mur pierre",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "pierre",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_mur_pierre.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_mur_pierre.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_bordure_beton",
+    "label": "Bordure béton",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "pierre",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_bordure_beton.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_bordure_beton.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_bordure_acier",
+    "label": "Bordure acier",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "pierre",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_bordure_acier.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_bordure_acier.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_bordure_bois",
+    "label": "Bordure bois",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_bordure_bois.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_bordure_bois.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_portail",
+    "label": "Portail",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "cloture",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_portail.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_portail.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_clotures_portillon",
+    "label": "Portillon",
+    "category": "Clôtures et limites",
+    "mode": "line",
+    "color": "#6f5138",
+    "unit": "m",
+    "h": 1.0,
+    "texture": "cloture",
+    "shapes": [
+      "line",
+      "curve",
+      "rectangle",
+      "square",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/clotures/pro_clotures_portillon.svg",
+    "model3d": "assets/models3d/clotures/pro_clotures_portillon.json",
+    "symbolChar": "╫",
+    "source": "library",
+    "widthM": 0.18
+  },
+  {
+    "id": "pro_constructions_maison_existante",
+    "label": "Maison existante",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "maison",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_maison_existante.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_maison_existante.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_abri_de_jardin",
+    "label": "Abri de jardin",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_abri_de_jardin.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_abri_de_jardin.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_garage",
+    "label": "Garage",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "maison",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_garage.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_garage.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_carport",
+    "label": "Carport",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_carport.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_carport.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_pergola",
+    "label": "Pergola",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_pergola.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_pergola.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_serre",
+    "label": "Serre",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "verre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_serre.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_serre.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_poolhouse",
+    "label": "Poolhouse",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_poolhouse.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_poolhouse.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_local_technique",
+    "label": "Local technique",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "maison",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_local_technique.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_local_technique.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_mur_existant",
+    "label": "Mur existant",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "pierre",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_mur_existant.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_mur_existant.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_escalier_exterieur",
+    "label": "Escalier extérieur",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "maison",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_escalier_exterieur.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_escalier_exterieur.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_rampe",
+    "label": "Rampe",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "maison",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_rampe.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_rampe.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_constructions_allee_garage",
+    "label": "Allée garage",
+    "category": "Constructions / abris",
+    "mode": "rect",
+    "color": "#9a7652",
+    "unit": "m²",
+    "h": 1.0,
+    "texture": "maison",
+    "shapes": [
+      "rectangle",
+      "square",
+      "ellipse",
+      "circle",
+      "free"
+    ],
+    "symbol2d": "assets/symbols2d/constructions/pro_constructions_allee_garage.svg",
+    "model3d": "assets/models3d/constructions/pro_constructions_allee_garage.json",
+    "symbolChar": "⌂",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_bbq",
+    "label": "BBQ",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "metal",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_bbq.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_bbq.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_brasero",
+    "label": "Brasero",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "metal",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_brasero.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_brasero.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_table_jardin",
+    "label": "Table jardin",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_table_jardin.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_table_jardin.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_banc",
+    "label": "Banc",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_banc.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_banc.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_salon_jardin",
+    "label": "Salon jardin",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_salon_jardin.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_salon_jardin.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_transat",
+    "label": "Transat",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_transat.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_transat.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_parasol",
+    "label": "Parasol",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "metal",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_parasol.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_parasol.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_bac_a_fleurs",
+    "label": "Bac à fleurs",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_bac_a_fleurs.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_bac_a_fleurs.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_pot_decoratif",
+    "label": "Pot décoratif",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_pot_decoratif.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_pot_decoratif.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_eclairage_borne",
+    "label": "Éclairage borne",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "metal",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_eclairage_borne.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_eclairage_borne.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_spot_encastre",
+    "label": "Spot encastré",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_spot_encastre.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_spot_encastre.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_lampadaire_jardin",
+    "label": "Lampadaire jardin",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "metal",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_lampadaire_jardin.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_lampadaire_jardin.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_bo_te_aux_lettres",
+    "label": "Boîte aux lettres",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "metal",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_bo_te_aux_lettres.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_bo_te_aux_lettres.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_composteur",
+    "label": "Composteur",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "metal",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_composteur.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_composteur.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_cabane_enfant",
+    "label": "Cabane enfant",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "bois",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_cabane_enfant.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_cabane_enfant.json",
+    "symbolChar": "●",
+    "source": "library"
+  },
+  {
+    "id": "pro_equipements_jeux_enfants",
+    "label": "Jeux enfants",
+    "category": "Équipements / mobilier",
+    "mode": "point",
+    "color": "#555555",
+    "unit": "pc",
+    "h": 1.0,
+    "texture": "metal",
+    "shapes": [
+      "point"
+    ],
+    "symbol2d": "assets/symbols2d/equipements/pro_equipements_jeux_enfants.svg",
+    "model3d": "assets/models3d/equipements/pro_equipements_jeux_enfants.json",
+    "symbolChar": "●",
+    "source": "library"
+  }
+];

@@ -796,3 +796,12 @@ footer {
 #propTexture option { background: #111b22; color: #edf5eb; }
 .lib-swatch { background-size: 22px 22px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.18); }
 #textureScaleLabel select { font-weight: 700; }
+
+
+/* BastPlan PRO : bibliothèque paysagère externe */
+.lib-item { grid-template-columns: 34px 1fr; min-height: 42px; }
+.lib-swatch { width: 30px; height: 30px; background-size: cover; background-position: center; display: grid; place-items: center; font-size: 16px; overflow: hidden; }
+.lib-swatch.with-symbol { background-color: rgba(255,255,255,.08); }
+.lib-swatch.with-symbol img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lib-meta { line-height: 1.25; }
+.lib-category summary::after { content: attr(data-count); float: right; opacity: .65; font-weight: 600; }

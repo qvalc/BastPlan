@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_concasse_calcaire",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "concasse"
+}

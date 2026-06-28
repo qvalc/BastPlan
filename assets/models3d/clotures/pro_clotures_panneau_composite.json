@@ -1,0 +1,6 @@
+{
+  "id": "pro_clotures_panneau_composite",
+  "type": "linear-extrusion",
+  "heightDefault": 0.2,
+  "texture": "composite_brun"
+}

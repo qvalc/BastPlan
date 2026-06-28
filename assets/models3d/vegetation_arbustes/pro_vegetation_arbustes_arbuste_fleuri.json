@@ -1,0 +1,6 @@
+{
+  "id": "pro_vegetation_arbustes_arbuste_fleuri",
+  "type": "point",
+  "heightDefault": 0.2,
+  "texture": "fleurs"
+}

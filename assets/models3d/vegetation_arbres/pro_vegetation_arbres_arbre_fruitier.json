@@ -1,0 +1,6 @@
+{
+  "id": "pro_vegetation_arbres_arbre_fruitier",
+  "type": "point",
+  "heightDefault": 4,
+  "texture": "arbre"
+}

@@ -1,0 +1,6 @@
+{
+  "id": "pro_equipements_cabane_enfant",
+  "type": "point",
+  "heightDefault": 0.2,
+  "texture": "bois"
+}

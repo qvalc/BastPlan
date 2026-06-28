@@ -1,0 +1,6 @@
+{
+  "id": "pro_clotures_mur_de_soutenement",
+  "type": "linear-extrusion",
+  "heightDefault": 0.2,
+  "texture": "pierre"
+}

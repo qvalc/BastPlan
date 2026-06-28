@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_pierre_bleue",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "pierre"
+}

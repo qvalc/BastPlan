@@ -1,0 +1,6 @@
+{
+  "id": "pro_eau_piscine_haricot",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "eau"
+}

@@ -1,0 +1,6 @@
+{
+  "id": "pro_constructions_abri_de_jardin",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "bois"
+}

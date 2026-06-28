@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_beton_desactive",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "beton_desactive"
+}

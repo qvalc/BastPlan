@@ -1,0 +1,6 @@
+{
+  "id": "pro_equipements_brasero",
+  "type": "point",
+  "heightDefault": 0.2,
+  "texture": "metal"
+}

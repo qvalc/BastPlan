@@ -1,0 +1,6 @@
+{
+  "id": "pro_terrasses_terrasse_bois_clair",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "bois_clair"
+}

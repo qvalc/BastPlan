@@ -1,0 +1,6 @@
+{
+  "id": "pro_clotures_portail",
+  "type": "linear-extrusion",
+  "heightDefault": 0.2,
+  "texture": "cloture"
+}

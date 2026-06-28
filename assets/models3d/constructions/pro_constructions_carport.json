@@ -1,0 +1,6 @@
+{
+  "id": "pro_constructions_carport",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "bois"
+}

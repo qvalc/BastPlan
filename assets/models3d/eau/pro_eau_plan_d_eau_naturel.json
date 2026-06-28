@@ -1,0 +1,6 @@
+{
+  "id": "pro_eau_plan_d_eau_naturel",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "eau"
+}

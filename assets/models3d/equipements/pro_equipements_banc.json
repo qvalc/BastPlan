@@ -1,0 +1,6 @@
+{
+  "id": "pro_equipements_banc",
+  "type": "point",
+  "heightDefault": 0.2,
+  "texture": "bois"
+}

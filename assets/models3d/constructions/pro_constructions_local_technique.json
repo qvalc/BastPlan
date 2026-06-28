@@ -1,0 +1,6 @@
+{
+  "id": "pro_constructions_local_technique",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "maison"
+}

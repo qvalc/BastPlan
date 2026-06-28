@@ -1,0 +1,6 @@
+{
+  "id": "pro_vegetation_arbustes_bac_potager",
+  "type": "point",
+  "heightDefault": 0.2,
+  "texture": "bois"
+}

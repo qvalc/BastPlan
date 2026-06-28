@@ -1,0 +1,6 @@
+{
+  "id": "pro_terrasses_terrasse_bois",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "bois"
+}

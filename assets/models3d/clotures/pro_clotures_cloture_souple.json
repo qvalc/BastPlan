@@ -1,0 +1,6 @@
+{
+  "id": "pro_clotures_cloture_souple",
+  "type": "linear-extrusion",
+  "heightDefault": 0.2,
+  "texture": "cloture"
+}

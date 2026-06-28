@@ -1,0 +1,6 @@
+{
+  "id": "pro_equipements_spot_encastre",
+  "type": "point",
+  "heightDefault": 0.2,
+  "texture": "bois"
+}

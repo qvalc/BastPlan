@@ -1,0 +1,6 @@
+{
+  "id": "pro_clotures_mur_pierre",
+  "type": "linear-extrusion",
+  "heightDefault": 0.2,
+  "texture": "pierre"
+}

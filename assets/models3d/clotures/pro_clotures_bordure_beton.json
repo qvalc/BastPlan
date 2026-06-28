@@ -1,0 +1,6 @@
+{
+  "id": "pro_clotures_bordure_beton",
+  "type": "linear-extrusion",
+  "heightDefault": 0.2,
+  "texture": "pierre"
+}

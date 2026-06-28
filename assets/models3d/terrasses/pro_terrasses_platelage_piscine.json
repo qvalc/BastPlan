@@ -1,0 +1,6 @@
+{
+  "id": "pro_terrasses_platelage_piscine",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "eau"
+}

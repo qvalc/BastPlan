@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_prairie_fleurie",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "fleurs"
+}

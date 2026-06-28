@@ -1,0 +1,6 @@
+{
+  "id": "pro_eau_bassin_decoratif",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "eau"
+}

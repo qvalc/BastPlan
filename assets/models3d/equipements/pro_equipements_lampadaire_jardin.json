@@ -1,0 +1,6 @@
+{
+  "id": "pro_equipements_lampadaire_jardin",
+  "type": "point",
+  "heightDefault": 0.2,
+  "texture": "metal"
+}

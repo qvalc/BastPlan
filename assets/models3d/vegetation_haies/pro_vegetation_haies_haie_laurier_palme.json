@@ -1,0 +1,6 @@
+{
+  "id": "pro_vegetation_haies_haie_laurier_palme",
+  "type": "linear-extrusion",
+  "heightDefault": 1.6,
+  "texture": "haie_dense"
+}

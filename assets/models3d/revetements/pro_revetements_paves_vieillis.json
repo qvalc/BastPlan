@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_paves_vieillis",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "paves"
+}

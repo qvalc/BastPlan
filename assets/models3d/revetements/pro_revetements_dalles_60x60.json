@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_dalles_60x60",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "dalles"
+}

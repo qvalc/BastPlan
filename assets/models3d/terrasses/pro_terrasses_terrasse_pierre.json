@@ -1,0 +1,6 @@
+{
+  "id": "pro_terrasses_terrasse_pierre",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "pierre"
+}

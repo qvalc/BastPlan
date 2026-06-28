@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_pelouse_fine",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "pelouse_fine"
+}

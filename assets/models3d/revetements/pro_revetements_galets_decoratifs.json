@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_galets_decoratifs",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "haie_sombre"
+}

@@ -1,0 +1,6 @@
+{
+  "id": "pro_constructions_maison_existante",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "maison"
+}

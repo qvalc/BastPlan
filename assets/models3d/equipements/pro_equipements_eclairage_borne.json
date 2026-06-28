@@ -1,0 +1,6 @@
+{
+  "id": "pro_equipements_eclairage_borne",
+  "type": "point",
+  "heightDefault": 0.2,
+  "texture": "metal"
+}

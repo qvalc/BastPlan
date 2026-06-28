@@ -128,6 +128,18 @@ const libraryItems = [
   { id: 'lib_bordure', label: 'Bordure', category: 'Clôtures et limites', mode: 'line', color: '#6a6a6a', unit: 'm', h: .25, shapes: ['line', 'rectangle', 'square', 'free'], texture: 'pierre' }
 ];
 
+// BastPlan PRO : ajoute une bibliothèque externe sans casser les anciens projets.
+// Le fichier assets/library.js définit window.BASTPLAN_PRO_LIBRARY_ITEMS.
+if (Array.isArray(window.BASTPLAN_PRO_LIBRARY_ITEMS)) {
+  const existingLibraryIds = new Set(libraryItems.map(item => item.id));
+  window.BASTPLAN_PRO_LIBRARY_ITEMS.forEach(item => {
+    if (item && item.id && !existingLibraryIds.has(item.id)) {
+      libraryItems.push({ ...item, source: 'library' });
+      existingLibraryIds.add(item.id);
+    }
+  });
+}
+
 const shapeLabels = { auto: 'Automatique', line: 'Ligne', curve: 'Courbe', rectangle: 'Rectangle', square: 'Carré', ellipse: 'Ovale', circle: 'Rond', free: 'Forme libre', point: 'Point / symbole' };
 const allShapeValues = ['auto', 'line', 'curve', 'rectangle', 'square', 'ellipse', 'circle', 'free', 'point'];
 let preferredBaseShape = 'auto';
@@ -187,7 +199,7 @@ function updateShapeSelect() {
   fillShapeSelect(document.getElementById('baseShapeSelect'), preferredBaseShape || 'auto');
   fillShapeSelect(document.getElementById('shapeSelect'), preferredLibraryShape || 'auto', activeTool?.source === 'library' ? activeTool : null);
 }
-libraryItems.forEach(item => toolDefs.push({ ...item, mode: item.mode, source: 'library' }));
+libraryItems.forEach(item => { if (!toolDefs.some(t => t.id === item.id)) toolDefs.push({ ...item, mode: item.mode, source: 'library' }); });
 const texturePatterns = {
   pelouse: ['#58a840', '#8ccd5d'], pelouse_fine: ['#4f9d38', '#9bd56b'], pelouse_dense: ['#347c2f', '#74b84a'], pelouse_seche: ['#9f9a4c', '#d2c96f'], pelouse_ombre: ['#2f6e38', '#5fa751'], prairie: ['#7eaf43', '#e9d166'], prairie_sauvage: ['#6ca147', '#d9b74e'], gazon_synthetique: ['#1f8b4b', '#43bc71'], gravier: ['#b9b9b4', '#70706d'], gravier_blanc: ['#deded8', '#9d9d94'], gravier_jaune: ['#d6be72', '#a28a45'], gravier_noir: ['#454545', '#161616'], gravier_rouge: ['#9b5542', '#673027'], gravier_bleu: ['#8c9aa0', '#4d5b63'], dolomie: ['#d7ca86', '#aa9a55'], concasse: ['#c6c2b4', '#858071'], galets: ['#c7c4b8', '#777369'], ecorce: ['#794321', '#3d1e12'], ecorce_claire: ['#a96935', '#63351c'], copeaux: ['#d5a245', '#7a4b24'], paillage: ['#b88945', '#6b4825'], paves: ['#9d9d9a', '#5f5f5c'], paves_clairs: ['#c8c8c2', '#8d8d87'], paves_fonces: ['#656565', '#343434'], paves_kandla: ['#b09676', '#6b5643'], paves_rouges: ['#a95342', '#763227'], paves_beton: ['#aaa8a0', '#77746d'], dalles: ['#b9b9b6', '#7f7f7b'], dalles_claires: ['#d0d0ca', '#9c9c95'], dalles_grandes: ['#b5b2aa', '#78756f'], opus: ['#b7aca0', '#777067'], beton_lisse: ['#b8b8b2', '#8d8d86'], beton_desactive: ['#beb59f', '#8d806b'], enrobe: ['#333333', '#111111'], bois: ['#a66a37', '#5a311b'], bois_clair: ['#c48b4f', '#7a4b24'], bois_fonce: ['#6f4329', '#2f1b12'], composite_gris: ['#777772', '#464642'], composite_brun: ['#79543c', '#3e271b'], pierre: ['#9c9f9f', '#626565'], ardoise: ['#4e5961', '#1f282e'], schiste: ['#6b5f55', '#302b28'], brique: ['#a24d34', '#6b2c20'], terre: ['#8a5c32', '#4b2d18'], terre_foncee: ['#5f3a22', '#28170d'], sable: ['#d7c48a', '#b39a5f'], eau: ['#55b9df', '#d3f6ff'], eau_naturelle: ['#4b9bc9', '#2b6b74'], eau_foncee: ['#2f6f8c', '#123a4b'], haie_dense: ['#2f7d32', '#143f1c'], haie_fine: ['#245f34', '#8fc463'], haie_feuillu: ['#6d8f34', '#365f1f'], haie_rouge: ['#7f2f37', '#328242'], haie_sombre: ['#1f5f2e', '#0e3518'], conifere: ['#1f6b38', '#103d22'], arbre: ['#2f8a3f', '#17501f'], arbre_fleuri: ['#8b4fa3', '#f4bfdc'], arbuste: ['#4e9f43', '#28702b'], fleurs: ['#b24d8d', '#f5c34d'], massif: ['#8b5a3c', '#4b7f30'], graminees: ['#b8a85f', '#e0d586'], maison: ['#ded8ce', '#b8afa5'], verre: ['#b8d6c9', '#e7ffff'], metal: ['#555555', '#111111'], cloture: ['#51605a', '#202825']
 };
@@ -643,10 +655,14 @@ function populateTextureSelectForSelection() {
   if (!arr.length) { texEl.innerHTML = '<option value="">Pas de texture</option>'; texEl.disabled = true; return; }
   texEl.disabled = false;
   const first = arr[0], t = getTool(first.type);
-  let keys = compatibleTextureKeys(first, t);
+  // BastPlan PRO : le menu Texture affiche toutes les textures disponibles.
+  // Les textures compatibles avec l'objet restent en premier, puis les autres suivent.
+  const preferredKeys = compatibleTextureKeys(first, t);
+  const allKeys = Object.keys(textureLabels || textureAssetPaths || texturePatterns || {}).filter(Boolean);
+  let keys = [...new Set([...preferredKeys, ...allKeys])];
   if (arr.length > 1) {
-    const common = keys.filter(k => arr.every(o => compatibleTextureKeys(o, getTool(o.type)).includes(k)));
-    keys = common.length ? common : [];
+    const common = preferredKeys.filter(k => arr.every(o => compatibleTextureKeys(o, getTool(o.type)).includes(k)));
+    keys = [...new Set([...common, ...allKeys])];
   }
   const current = arr.length === 1 ? ((first.texture && first.texture !== NO_TEXTURE) ? first.texture : '') : (arr.every(o => ((o.texture && o.texture !== NO_TEXTURE) ? o.texture : '') === ((first.texture && first.texture !== NO_TEXTURE) ? first.texture : '')) ? ((first.texture && first.texture !== NO_TEXTURE) ? first.texture : '') : '');
   texEl.innerHTML = [
@@ -970,11 +986,18 @@ function renderLibrary() {
   const panel = document.getElementById('libraryPanel'); if (!panel) return;
   const q = (document.getElementById('librarySearch')?.value || '').toLowerCase().trim();
   const groups = {};
-  libraryItems.filter(i => !q || (i.label + ' ' + i.category).toLowerCase().includes(q)).forEach(i => { (groups[i.category] ||= []).push(i); });
-  const activeCat = activeTool?.source === 'library' ? activeTool.category : null;
+  libraryItems
+    .filter(i => !q || (i.label + ' ' + i.category + ' ' + (i.texture || '')).toLowerCase().includes(q))
+    .forEach(i => { (groups[i.category || 'Paysage'] ||= []).push(i); });
   panel.innerHTML = Object.entries(groups).map(([cat, items]) => {
     const open = q || openLibraryCats.has(cat);
-    return `<details class="lib-category" data-cat="${cat}" ${open ? 'open' : ''}><summary>${cat}</summary><div class="lib-list">${items.map(i => `<button class="lib-item ${activeTool?.id === i.id ? 'active' : ''}" data-lib="${i.id}"><span class="lib-swatch" style="--swatch:${i.color};--texture:${textureCss(i.texture)}"></span><span><span class="lib-name">${i.label}</span><span class="lib-meta">${(i.shapes || []).map(v => shapeLabels[v] || v).join(' · ')}</span></span></button>`).join('')}</div></details>`;
+    const content = items.map(i => {
+      const symbol = i.symbol2d ? `<img src="${i.symbol2d}" alt="">` : (i.symbolChar ? `<span>${i.symbolChar}</span>` : '');
+      const bg = i.symbol2d ? `url('${i.symbol2d}')` : textureCss(i.texture);
+      const cls = i.symbol2d || i.symbolChar ? 'lib-swatch with-symbol' : 'lib-swatch';
+      return `<button class="lib-item ${activeTool?.id === i.id ? 'active' : ''}" data-lib="${i.id}"><span class="${cls}" style="--swatch:${i.color};--texture:${bg}">${symbol}</span><span><span class="lib-name">${i.label}</span><span class="lib-meta">${(i.shapes || []).map(v => shapeLabels[v] || v).join(' · ')}${i.texture ? ' · texture: ' + (textureLabels[i.texture] || i.texture) : ''}</span></span></button>`;
+    }).join('');
+    return `<details class="lib-category" data-cat="${cat}" ${open ? 'open' : ''}><summary data-count="${items.length}">${cat}</summary><div class="lib-list">${content}</div></details>`;
   }).join('') || '<p class="small">Aucun objet trouvé.</p>';
   panel.querySelectorAll('[data-lib]').forEach(b => b.onclick = () => setActiveTool(b.dataset.lib));
   panel.querySelectorAll('.lib-category').forEach(d => d.addEventListener('toggle', () => { const cat = d.dataset.cat; if (d.open) openLibraryCats.add(cat); else openLibraryCats.delete(cat); }));
@@ -1442,6 +1465,41 @@ function drawCurveDims(pts) {
   const mid = pts[Math.floor(pts.length / 2)];
   dimText(`${meters(toM(curveLengthPx(pts)))} m`, mid.x, mid.y - 18, 0);
 }
+
+function drawPointSymbol2D(o, t, fill) {
+  if (!o || !o.r || o.type === 'texte') return false;
+  const symbol = (t && t.symbolChar) || '';
+  const id = String(o.libraryId || o.type || '').toLowerCase();
+  const name = String((o.name || t?.label || '')).toLowerCase();
+  let char = symbol;
+  if (!char) {
+    if (id.includes('arbre') || name.includes('arbre') || name.includes('chêne') || name.includes('erable')) char = '🌳';
+    else if (id.includes('arbuste') || name.includes('arbuste') || name.includes('lavande') || name.includes('buis')) char = '🌿';
+    else if (id.includes('bbq') || name.includes('bbq') || name.includes('brasero')) char = '●';
+    else if (id.includes('mobilier') || name.includes('table') || name.includes('banc')) char = '■';
+  }
+  if (!char) return false;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+  ctx.fillStyle = patternFill(o, fill);
+  ctx.fill();
+  ctx.strokeStyle = isSelected(o.id) ? '#ff7b00' : '#263328';
+  ctx.lineWidth = isSelected(o.id) ? 1.0 : 0.35;
+  ctx.stroke();
+  ctx.font = `bold ${Math.max(14, o.r * 1.15)}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(0,0,0,.35)';
+  ctx.shadowBlur = 2;
+  ctx.fillText(char, o.x, o.y + 1);
+  ctx.restore();
+  label(o, o.x, o.y - o.r - 8);
+  if (showDims) drawCircleDim(o);
+  return true;
+}
+
 function drawObj(o) {
   if (o.type === 'image') { drawImageObject(o); return; }
   const t = getTool(o.type); const fill = o.color || t.color; ctx.lineWidth = isSelected(o.id) ? 1.0 : 0.35; ctx.strokeStyle = isSelected(o.id) ? '#ff7b00' : '#263328'; ctx.fillStyle = patternFill(o, fill);
@@ -1488,7 +1546,7 @@ function drawObj(o) {
     if (showDims && o.type !== 'ligne') drawLineDim({ x: o.x1, y: o.y1 }, { x: o.x2, y: o.y2 });
     return;
   }
-  if (o.r) { if (o.type === 'texte') { ctx.fillStyle = fill; ctx.font = 'bold 18px Arial'; ctx.textAlign = 'center'; ctx.fillText(o.name || 'Texte', o.x, o.y); return; } ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); label(o, o.x, o.y - o.r - 8); if (showDims) drawCircleDim(o); return; }
+  if (o.r) { if (drawPointSymbol2D(o, t, fill)) return; if (o.type === 'texte') { ctx.fillStyle = fill; ctx.font = 'bold 18px Arial'; ctx.textAlign = 'center'; ctx.fillText(o.name || 'Texte', o.x, o.y); return; } ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); label(o, o.x, o.y - o.r - 8); if (showDims) drawCircleDim(o); return; }
   if (o.shape === 'ellipse' || o.shape === 'circle' || (!o.shape && (o.type === 'eau' || o.type === 'piscine'))) { ctx.beginPath(); ctx.ellipse(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, o.h / 2, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); label(o, o.x + o.w / 2, o.y + o.h / 2); if (showDims) drawEllipseDims(o); return; }
   if (o.shape === 'rounded') { drawRoundRect(o.x, o.y, o.w, o.h, Math.min(o.w, o.h) * .15); ctx.fill(); ctx.stroke(); label(o, o.x + o.w / 2, o.y + o.h / 2); if (showDims) drawRectDims(o); return; }
   ctx.fillRect(o.x, o.y, o.w, o.h); ctx.strokeRect(o.x, o.y, o.w, o.h); label(o, o.x + o.w / 2, o.y + o.h / 2); if (showDims) drawRectDims(o);

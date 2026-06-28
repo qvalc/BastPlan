@@ -1,0 +1,6 @@
+{
+  "id": "pro_vegetation_haies_haie_photinia",
+  "type": "linear-extrusion",
+  "heightDefault": 1.6,
+  "texture": "haie_rouge"
+}

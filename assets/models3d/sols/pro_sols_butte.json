@@ -1,0 +1,6 @@
+{
+  "id": "pro_sols_butte",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "terre"
+}

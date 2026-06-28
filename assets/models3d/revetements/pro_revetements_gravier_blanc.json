@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_gravier_blanc",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "gravier_blanc"
+}

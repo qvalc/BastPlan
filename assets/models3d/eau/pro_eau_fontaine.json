@@ -1,0 +1,6 @@
+{
+  "id": "pro_eau_fontaine",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "eau"
+}

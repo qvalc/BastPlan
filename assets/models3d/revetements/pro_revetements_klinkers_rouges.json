@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_klinkers_rouges",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "paves_rouges"
+}

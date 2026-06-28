@@ -1,0 +1,6 @@
+{
+  "id": "pro_clotures_portillon",
+  "type": "linear-extrusion",
+  "heightDefault": 0.2,
+  "texture": "cloture"
+}

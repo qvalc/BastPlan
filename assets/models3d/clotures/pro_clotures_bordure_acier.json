@@ -1,0 +1,6 @@
+{
+  "id": "pro_clotures_bordure_acier",
+  "type": "linear-extrusion",
+  "heightDefault": 0.2,
+  "texture": "pierre"
+}

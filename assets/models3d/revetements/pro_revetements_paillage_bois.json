@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_paillage_bois",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "bois"
+}

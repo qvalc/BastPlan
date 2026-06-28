@@ -1,0 +1,6 @@
+{
+  "id": "pro_sols_fondation_terrasse",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "terre"
+}

@@ -1,0 +1,6 @@
+{
+  "id": "pro_revetements_opus_incertum",
+  "type": "extruded-surface",
+  "heightDefault": 0.2,
+  "texture": "paves"
+}
