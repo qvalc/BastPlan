@@ -790,3 +790,9 @@ footer {
         min-width: 160px;
     }
 }
+
+
+/* Pack textures 2D + 3D intégré */
+#propTexture option { background: #111b22; color: #edf5eb; }
+.lib-swatch { background-size: 22px 22px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.18); }
+#textureScaleLabel select { font-weight: 700; }
